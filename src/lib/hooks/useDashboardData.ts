@@ -72,3 +72,37 @@ export function useStudioStats() {
 
     return { stats, loading };
 }
+
+/**
+ * Hook to stream pending onboarding briefs
+ */
+export function usePendingBriefs() {
+    const [briefs, setBriefs] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const q = query(
+            collection(db, "briefs"),
+            where("status", "==", "pending"),
+            orderBy("createdAt", "desc"),
+            limit(20)
+        );
+
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const data = snapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+                createdAt: doc.data().createdAt?.toDate() || new Date(),
+            }));
+            setBriefs(data);
+            setLoading(false);
+        }, (error) => {
+            console.error("Error fetching briefs:", error);
+            setLoading(false);
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    return { briefs, loading };
+}

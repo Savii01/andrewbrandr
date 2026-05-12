@@ -2,17 +2,70 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import * as FaIcons from "react-icons/fa";
-import { MdArrowOutward, MdChevronLeft, MdChevronRight } from "react-icons/md";
+import { MdArrowOutward, MdChevronLeft, MdChevronRight, MdArrowForward } from "react-icons/md";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import { pricingPlans } from "@/lib/pricingPlans";
 
+import Link from "next/link";
 import Button from "./Button";
 
+const stages = [
+  {
+    id: 1,
+    slug: "foundation",
+    stage: "Stage 01",
+    title: "Starting Out",
+    subtitle: "You have a product. But the foundation isn’t clear yet.",
+    price: "₦80,000",
+    package: "Strategy Lite • Identity Core",
+    description: "A clear, professional identity built to enter the market properly.",
+    cta: "View Stage 01",
+    link: "/pricing/foundation"
+  },
+  {
+    id: 2,
+    slug: "clarity",
+    stage: "Stage 02",
+    title: "Running, but stuck",
+    subtitle: "The business works. But the brand feels disconnected.",
+    extra: "It looks different everywhere. Trust isn’t where it should be.",
+    price: "₦300,000",
+    package: "Strategy • Identity • Systems",
+    description: "Clarity, consistency, and a stronger foundation for growth.",
+    cta: "View Stage 02",
+    link: "/pricing/clarity"
+  },
+  {
+    id: 3,
+    slug: "scale",
+    stage: "Stage 03",
+    title: "Growing & Scaling",
+    subtitle: "The business has evolved. The brand hasn’t kept up.",
+    extra: "New markets. Higher expectations. The system needs to scale.",
+    price: "₦900,000",
+    package: "Strategy • Identity • Web System",
+    description: "A scalable brand system built for the next level.",
+    cta: "View Stage 03",
+    link: "/pricing/scale"
+  },
+  {
+    id: 4,
+    slug: "enterprise",
+    stage: "Stage 04",
+    title: "Enterprise",
+    subtitle: "Rebuilding at scale.",
+    extra: "Governance. Systems. Multi-platform execution.",
+    price: "Custom scoped",
+    package: "Full Strategy • Identity • Systems • Expression",
+    description: "A complete brand operating system built for any team, at any scale.",
+    cta: "View Enterprise",
+    link: "/pricing/enterprise"
+  }
+];
+
 const Pricing = () => {
-  const [isNigeria, setIsNigeria] = useState<boolean>(false);
   const [mounted, setMounted] = useState(false);
   const prevRef = useRef<HTMLButtonElement>(null);
   const nextRef = useRef<HTMLButtonElement>(null);
@@ -20,14 +73,6 @@ const Pricing = () => {
 
   useEffect(() => {
     setMounted(true);
-    try {
-      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      if (tz === "Africa/Lagos") {
-        setIsNigeria(true);
-      }
-    } catch (e) {
-      console.error(e);
-    }
   }, []);
 
   useEffect(() => {
@@ -37,136 +82,148 @@ const Pricing = () => {
       swiperInstance.params.navigation.nextEl = nextRef.current;
       swiperInstance.navigation.init();
       swiperInstance.navigation.update();
-
-      setTimeout(() => {
-        const swiperEl = swiperInstance.el;
-        if (!swiperEl) return;
-
-        const handleMouseEnter = () => swiperInstance.autoplay?.stop();
-        const handleMouseLeave = () => swiperInstance.autoplay?.start();
-
-        swiperEl.addEventListener("mouseenter", handleMouseEnter);
-        swiperEl.addEventListener("mouseleave", handleMouseLeave);
-
-        return () => {
-          swiperEl.removeEventListener("mouseenter", handleMouseEnter);
-          swiperEl.removeEventListener("mouseleave", handleMouseLeave);
-        };
-      }, 0);
     }
-  }, []);
+  }, [mounted]);
 
   return (
-    <div className="bg-white dark:bg-black py-20 overflow-hidden">
+    <div id="pricing" className="bg-[#FDF3E6] py-20 overflow-hidden">
       <div className="mx-4 flex flex-col justify-center items-center">
-        <div className="mx-2 max-w-4xl text-center">
-          <div className="flex flex-col items-center gap-2 mb-8 xl:mb-14">
-            <span className="bg-orange text-white px-3 py-2 mb-5 rounded-full text-xs uppercase tracking-wide font-medium">
-              • Work With Me
-            </span>
-            <h1 className="text-black dark:text-white text-[24px] md:text-[36px] lg:text-[40px] font-customFont font-semibold tracking-tighter mb-6 leading-tight">
-              Choose How You&apos;d Like To Collaborate
-            </h1>
-            <p className="text-gray-700 dark:text-gray-300 text-[16px] max-w-2xl">
-              Whether you need a one-time creative project or ongoing design support,
-              choose an option that fits your goals and let&apos;s bring your vision to life.
-            </p>
-          </div>
+        
+        {/* ── Header ── */}
+        <div className="max-w-[720px] text-left w-full mb-14">
+          <span className="bg-[#CC3300] text-white px-8 py-2.5 mb-5 rounded-full text-[14px] font-bold inline-block">
+            Find your stage
+          </span>
+          <h2 className="text-[#0F0000] text-[24px] sm:text-[28px] md:text-[30px] font-bold tracking-tight leading-[1.15] mb-6">
+            Growth happens in phases.
+            <br />
+            Your brand should reflect the one you&apos;re in.
+          </h2>
         </div>
 
-        {/* Swiper Carousel with side arrows */}
-        <div className="w-full max-w-[1400px] relative px-4 md:px-12 lg:px-16">
+        {/* ── Original Swiper Carousel ── */}
+        <div className="w-full max-w-[720px] relative mb-20 px-4 md:px-0">
 
           {/* Left Arrow */}
           <button
             ref={prevRef}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full border border-gray-300 dark:border-gray-700 bg-black dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors text-white dark:text-black flex items-center justify-center"
+            className="absolute left-2 md:-left-12 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-[#0F0000] text-[#FDF3E6] hover:bg-[#CC3300] transition-colors flex items-center justify-center shadow-xl"
           >
-            <MdChevronLeft size={24} />
+            <MdChevronLeft size={20} />
           </button>
 
           {/* Right Arrow */}
           <button
             ref={nextRef}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full border border-gray-300 dark:border-gray-700 bg-black dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors text-white dark:text-black flex items-center justify-center"
+            className="absolute right-2 md:-right-12 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-[#0F0000] text-[#FDF3E6] hover:bg-[#CC3300] transition-colors flex items-center justify-center shadow-xl"
           >
-            <MdChevronRight size={24} />
+            <MdChevronRight size={20} />
           </button>
 
-          <div className="bg-black dark:bg-[#1e1e1e] rounded-[2rem] p-2 lg:p-3">
+          <div className="bg-[#0F0000] rounded-[2.5rem] p-2 sm:p-3">
             <Swiper
               ref={swiperRef}
               modules={[Navigation, Autoplay]}
               spaceBetween={8}
               slidesPerView={1}
+              breakpoints={{
+                768: { slidesPerView: 2 },
+              }}
               loop={true}
               speed={800}
               autoplay={{
-                delay: 4000,
+                delay: 5000,
                 disableOnInteraction: false,
               }}
               navigation={{ prevEl: prevRef.current, nextEl: nextRef.current }}
-              breakpoints={{
-                768: {
-                  slidesPerView: 2,
-                  spaceBetween: 8,
-                },
-                1024: {
-                  slidesPerView: 3,
-                  spaceBetween: 8,
-                },
-              }}
               className="w-full"
             >
-              {pricingPlans.map((plan) => {
-                const price = mounted && isNigeria ? plan.priceNGN : plan.priceUSD;
-
-                return (
-                  <SwiperSlide key={plan.id} className="!h-auto">
-                    <div className="h-full border border-black dark:border-gray-400 rounded-[28px] p-6 lg:p-8 bg-white dark:bg-lilBlack flex flex-col transition-colors duration-300">
-                      {/* Header */}
-                      <div className="mb-3 text-left">
-                        <h4 className="text-2xl lg:text-3xl font-customFont font-semibold dark:text-white text-black mb-3 leading-tight">{plan.subtitle}</h4>
-                        <h3 className="text-lg font-bold text-orange mb-3 inline-block bg-orange/10 px-2 py-1 rounded-md">{plan.title}</h3>
-                        <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">{plan.description}</p>
-                      </div>
-
-                      {/* Divider */}
-                      <div className="bg-gray-200 dark:bg-gray-800 h-[1px] w-full my-4"></div>
-
-                      {/* Price */}
-                      <div className="text-2xl lg:text-3xl font-customFont font-semibold dark:text-white text-black text-left mb-4">
-                        {mounted ? price : ""}
-                      </div>
-
-                      {/* Footer Tag */}
-                      <p className="text-gray-500 dark:text-gray-500 text-xs mb-6">{plan.footerText}</p>
-
-                      {/* Highlight Bullets */}
-                      <ul className="flex-1 space-y-3 text-left mb-8">
-                        {plan.highlights.map((item, idx) => (
-                          <li key={idx} className="flex items-start text-[13px] text-gray-700 dark:text-gray-400 space-x-2">
-                            <FaIcons.FaCheck size={12} className="shrink-0 mt-1 text-orange" />
-                            <span className="leading-relaxed">{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-
-                      {/* CTA */}
-                      <Button
-                        href={`/pricing/${plan.slug}`}
-                        label="View Package"
-                        variant={plan.id === 3 ? "primary" : "secondary"}
-                        icon={MdArrowOutward}
-                        className="w-full"
-                      />
+              {stages.map((item) => (
+                <SwiperSlide key={item.id} className="!h-auto">
+                  <div className="h-full border border-white/10 rounded-[2.2rem] p-6 sm:p-8 md:p-10 bg-[#fdf3e6] flex flex-col transition-all duration-300">
+                    <div className="flex justify-between items-center mb-6">
+                      <span className="text-[12px] font-bold uppercase bg-[#0f0000] text-[#fdf3e6] rounded-full py-1 px-4">
+                        {item.stage}
+                      </span>
+                      <span className="text-[18px] md:text-[20px] font-extrabold text-[#0F0000]">
+                        {item.price}
+                      </span>
                     </div>
-                  </SwiperSlide>
-                );
-              })}
+
+                    <h3 className="text-[24px] md:text-[28px] font-extrabold text-[#0F0000] leading-tight mb-4">
+                      {item.title}
+                    </h3>
+                    
+                    <p className="text-[#0F0000] text-[15px] md:text-[16px] leading-relaxed mb-4 font-bold">
+                      {item.subtitle}
+                    </p>
+                    
+                    {item.extra && (
+                      <p className="text-[#0F0000]/60 text-[14px] leading-relaxed mb-6">
+                        {item.extra}
+                      </p>
+                    )}
+                    
+                    <div className="flex-1 border-t border-[#0f0000]/10 pt-6 mb-8">
+                      <p className="text-[11px] font-bold uppercase text-[#0f0000]/50 mb-2">
+                        Package Includes
+                      </p>
+                      <p className="text-[14px] font-bold text-[#0f0000] mb-4">
+                        {item.package}
+                      </p>
+                      <p className="text-[14px] text-[#0f0000]/80 leading-relaxed">
+                        {item.description}
+                      </p>
+                    </div>
+
+                    <Link 
+                      href={item.link}
+                      className="inline-flex items-center justify-between w-full bg-[#0f0000] text-white px-8 py-4 rounded-full text-[15px] font-bold hover:bg-[#CC3300] transition-colors group"
+                    >
+                      {item.cta}
+                      <MdArrowOutward className="w-5 h-5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                    </Link>
+                  </div>
+                </SwiperSlide>
+              ))}
             </Swiper>
           </div>
         </div>
+
+        {/* ── The Investment Section ── */}
+        <div className="max-w-[720px] w-full bg-[#5C1500] rounded-[2rem] p-10 md:p-16 text-left">
+          <span className="text-[#5C1500] bg-[#FDF3E6] px-4 py-1.5 rounded-full text-[14px] font-bold mb-6 inline-block">
+            The Investment
+          </span>
+          <h2 className="text-[#FDF3E6] text-[28px] md:text-[32px] font-extrabold tracking-tight mb-4 leading-tight">
+            A strong brand is not an expense.
+          </h2>
+          
+          <div className="space-y-4 text-[#FDF3E6]/90 text-[14px] md:text-[16px] max-w-[720px] leading-relaxed font-medium">
+            <p>
+              It&apos;s the foundation your growth depends on.
+              Each stage is designed around what your business actually needs.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row justify-start items-start  gap-4">
+              <span className="bg-[#fdf3e6]/10 text-[#FDF3E6]/80 border border-[#FDF3E6] px-6 py-2 rounded-full text-[14px] font-bold">
+                No bloated retainers
+              </span>
+              <span className="bg-[#fdf3e6]/10 text-[#FDF3E6]/80 border border-[#FDF3E6] px-6 py-2 rounded-full text-[14px] font-bold">
+                No unnecessary add-ons
+              </span>
+            </div>
+
+            <p className="opacity-80">
+              Every project begins with discovery and a tailored proposal before payment is made.
+            </p>
+            
+            <p className="text-[20px] md:text-[24px] font-black text-[#FDF3E6] opacity-100 pt-4">
+              Clarity first. Then commitment.
+            </p>
+          </div>
+        </div>
+
       </div>
     </div>
   );

@@ -1,52 +1,81 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
+import Link from "next/link";
+import AvailabilityBadge from "./AvailabilityBadge";
 import Button from "./Button";
 import { MdArrowOutward } from "react-icons/md";
 
 export default function Hero() {
   return (
-    <div className="relative w-screen h-screen flex justify-center items-center py-4 px-4 bg-white dark:bg-black overflow-hidden">
+    <section className="relative min-h-screen bg-[#0F0000] flex items-center justify-center px-4 py-24 md:pt-32 md:pb-8">
+      <div className="flex flex-col items-start text-left max-w-[720px] w-full gap-8">
 
-      <div className="relative z-10 flex flex-col gap-6 items-center text-center max-w-4xl px-4 md:px-6 w-full">
-        {/* Availability Badge */}
-        <div className="animate-pulse flex justify-center items-center gap-2 bg-transparent border border-gray-300 dark:border-gray-800 px-4 py-1.5 rounded-lg">
-          <div className="bg-orange rounded-full w-2 h-2"></div>
-          <p className="text-black dark:text-gray-300 text-[12px] md:text-[14px] font-medium tracking-wide">
-            Available for work
-          </p>
+        {/* ── Identity Row: Photo + Icon | Name + Role ── */}
+        <div className="flex items-center gap-6">
+          {/* Photo + Brand Icon overlapping */}
+          <div className="relative flex items-center">
+            {/* Profile Photo */}
+            <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-orange z-20">
+              <Image
+                src="/images/AboutMe.png"
+                alt="Andrew"
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
+            {/* Brand Icon — overlapping the photo from the right */}
+            <div className="relative -ml-6 w-20 h-20 rounded-full border-2 border-orange overflow-hidden bg-[#0F0000] z-10 flex items-center justify-center">
+              <Image
+                src="/brand_assets/icon_logo_BLACK.png"
+                alt="AndrewBrandr"
+                width={48}
+                height={48}
+                className="object-contain"
+              />
+            </div>
+          </div>
+
+          {/* Name + Role */}
+          <div className="flex flex-col items-start gap-1">
+            <h2 className="text-[#FDF3E6] text-xl md:text-2xl font-bold leading-tight">
+              Andrew
+            </h2>
+            <p className="text-[#FDF3E6] text-base font-medium">
+              Brand Strategist & Designer
+            </p>
+          </div>
         </div>
 
-        {/* Static Header */}
-        <h1 className="text-[40px] lg:text-center font-semibold sm:text-[60px] md:text-[60px] leading-[1.1] tracking-tighter max-w-[100%] md:max-w-[800px] animate-fadeIn text-black dark:text-white">
-          Logos are easy.<br />
-          Clarity is the hard part.
-
+        {/* ── Headline ── */}
+        <h1 className="text-[#FDF3E6] text-[28px] sm:text-[36px] md:text-[36px] font-bold leading-[1.1] tracking-tight max-w-[620px]">
+          Your brand is the first conversation <br />your business has with a stranger, and if it’s unclear, they move on.
         </h1>
 
-        {/* Subtext */}
-        <p className="text-[16px] lg:text-center sm:text-[18px] max-w-xs sm:max-w-2xl md:max-w-xl text-gray-700 dark:text-white leading-relaxed">
-          I design brand systems that help companies communicate clearly,
-          stay consistent, and grow with confidence. Brand identity, digital
-          design, and web systems — built to work together.
+        {/* ── Supporting Paragraph ── */}
+        <p className="text-[#FDF3E6] text-[14px] sm:text-[16px] leading-relaxed max-w-[540px]">
+          I build structured brand systems for businesses that need more than
+          good visuals. They need clarity, consistency, and a foundation that
+          can grow.<br /><br />
+          Strategy. Identity. Web.
         </p>
 
-        {/* Buttons */}
-        <div className="flex sm:flex-row flex-col gap-5 mt-5 w-full sm:w-auto">
+        {/* ── CTA Group ── */}
+        <div className="flex flex-col sm:flex-row items-start gap-3 w-full sm:w-auto">
           <Button
-            href="/send-message"
-            label="Send a Message"
-            variant="primary"
+            href="/work-with-me"
+            label="Start the Process"
             icon={MdArrowOutward}
-          />
-          <Button
-            href="/projects"
-            label="See Projects"
             variant="secondary"
-            icon={MdArrowOutward}
+            className="w-full sm:w-auto px-7 py-3 !bg-[#fdf3e6] !text-[#0F0000] !border-[#fdf3e6]/20 hover:!border-[#fdf3e6]/40 transition-colors !text-[14px] !rounded-full !font-bold hover:!bg-[#cc3300] hover:!text-white"
+            fullWidth={false}
           />
+          <AvailabilityBadge />
         </div>
+
       </div>
-    </div>
+    </section>
   );
 }

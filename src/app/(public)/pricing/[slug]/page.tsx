@@ -2,199 +2,310 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams, notFound } from "next/navigation";
-import { motion } from "framer-motion";
-import * as FaIcons from "react-icons/fa";
-import { MdArrowOutward, MdArrowBack } from "react-icons/md";
+import { motion, AnimatePresence } from "framer-motion";
+import { MdArrowBack, MdCheck, MdArrowOutward } from "react-icons/md";
 import { pricingPlans } from "@/lib/pricingPlans";
-import Button from "@/components/public/Button";
 import Link from "next/link";
-import OrderSummary from "@/components/OrderSummary";
+import QualificationForm from "@/components/public/QualificationForm";
 
 const fadeInUp = {
-    initial: { opacity: 0, y: 40 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, amount: 0.2 },
-    transition: { duration: 0.6 }
+  initial: { opacity: 0, y: 30 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.6, ease: [0.33, 1, 0.68, 1] }
 };
 
+type ViewState = "DETAILS" | "FORM" | "CONFIRMATION";
+
 export default function PricingDetailPage() {
-    const params = useParams();
-    const slug = params.slug as string;
+  const params = useParams();
+  const slug = params.slug as string;
+  const [mounted, setMounted] = useState(false);
+  const [isNigeria, setIsNigeria] = useState(false);
+  const [viewState, setViewState] = useState<ViewState>("DETAILS");
 
-    const [isNigeria, setIsNigeria] = useState(false);
-    const [mounted, setMounted] = useState(false);
-    const [retainerSelected, setRetainerSelected] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+    try {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (tz === "Africa/Lagos") setIsNigeria(true);
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
 
-    useEffect(() => {
-        setMounted(true);
-        try {
-            const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            if (tz === "Africa/Lagos") setIsNigeria(true);
-        } catch (e) {
-            console.error(e);
-        }
-    }, []);
+  const plan = pricingPlans.find((p) => p.slug === slug);
+  if (!plan) return notFound();
 
-    const plan = pricingPlans.find((p) => p.slug === slug);
-    if (!plan) return notFound();
+  const price = mounted && isNigeria ? plan.investment.priceNGN : plan.investment.priceUSD;
 
-    const price = mounted && isNigeria ? plan.priceNGN : plan.priceUSD;
-    const retainerPrice = mounted && isNigeria ? plan.retainer.priceNGN : plan.retainer.priceUSD;
+  if (!mounted) return null;
 
-    // Construct final link for onboarding
-    const finalLink = `/onboarding?plan=${plan.slug}&retainer=${retainerSelected}`;
+  return (
+    <div className="pt-32 bg-[#FDF3E6] min-h-screen pb-20 selection:bg-[#CC3300] selection:text-white">
+      <div className="max-w-[720px] mx-auto px-6">
+        
+        {/* Back Link */}
+        <Link 
+          href="/#pricing" 
+          className="inline-flex items-center gap-2 text-[#0F0000]/60 hover:text-[#CC3300] transition-colors mb-16 text-sm font-bold uppercase tracking-widest"
+        >
+          <MdArrowBack size={18} />
+          Back to all stages
+        </Link>
 
-    return (
-        <div className="pt-32 bg-white dark:bg-black min-h-screen">
-            <div className="px-6 lg:px-32 2xl:px-[260px] py-5">
+        <AnimatePresence mode="wait">
+          {viewState === "DETAILS" && (
+            <motion.div 
+              key="stage-details"
+              initial="initial"
+              animate="animate"
+              exit={{ opacity: 0, y: -20 }}
+              variants={fadeInUp}
+            >
+              {/* Stage Header */}
+              <div className="mb-20">
+                <span className="text-[#CC3300] font-bold text-xl mb-4 block">
+                  {plan.stage} — {plan.subtitle}
+                </span>
+                <h1 className="text-[42px] md:text-[40px] font-extrabold text-[#0F0000] mb-8 tracking-tight">
+                  {plan.stage} — {plan.title}
+                </h1>
+                
+                <div className="space-y-6 text-[#0F0000] text-[18px] md:text-[21px] leading-[0.9] font-medium">
+                  {plan.headerDescription.split('. ').map((sentence, i) => (
+                    <p key={i}>{sentence}.</p>
+                  ))}
+                </div>
 
-                {/* Back Link */}
-                <Link href="/pricing" className="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-orange transition-colors mb-12 text-sm">
-                    <MdArrowBack size={18} />
-                    Back to all packages
-                </Link>
+                <div className="mt-12 pt-8 border-t border-[#0F0000]/10 flex flex-wrap gap-8">
+                   <div>
+                     <p className="text-[11px] font-bold uppercase tracking-widest text-[#0F0000]/40 mb-1">Investment</p>
+                     <p className="text-2xl font-black text-[#0F0000]">{price}</p>
+                   </div>
+                   <div>
+                     <p className="text-[11px] font-bold uppercase tracking-widest text-[#0F0000]/40 mb-1">Focus</p>
+                     <p className="text-2xl font-black text-[#0F0000]">{plan.slugText}</p>
+                   </div>
+                </div>
+              </div>
 
-                {/* Hero */}
-                <motion.div {...fadeInUp} className="mb-16">
-                    <span className="text-lg border border-orange/10 font-bold text-orange inline-block bg-orange/10 px-3 py-1 rounded-md mb-4">
-                        {plan.title}
-                    </span>
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-customFont font-bold text-black dark:text-white tracking-tighter leading-tight mb-6">
-                        {plan.subtitle}
-                    </h1>
-                    <p className="text-gray-600 dark:text-gray-400 text-lg max-w-3xl leading-relaxed mb-8">
-                        {plan.description}
+              <hr className="border-[#0F0000]/10 mb-20" />
+
+              {/* Who this is for */}
+              <section className="mb-24">
+                <h2 className="text-[16px] font-bold uppercase text-[#CC3300] mb-10">Who this stage is for</h2>
+                <div className="space-y-6">
+                  {plan.whoThisIsFor.map((item, i) => (
+                    <p key={i} className="text-[20px] md:text-[24px] font-bold text-[#0F0000] leading-tight flex items-start gap-4">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#CC3300] mt-3 shrink-0" />
+                      {item}
                     </p>
-                    <div className="flex items-baseline gap-4">
-                        <span className="text-5xl md:text-6xl font-customFont tracking-tighter font-bold text-black dark:text-white">
-                            {mounted ? price : ""}
-                        </span>
-                        <span className="text-gray-500 dark:text-gray-400 text-lg">
-                            {plan.footerText.split(" ").join(" || ")}
-                        </span>
+                  ))}
+                </div>
+                <p className="mt-10 text-[#0F0000]/80 text-lg leading-relaxed italic">
+                  {plan.slug === 'foundation' 
+                    ? "If you're about to show up publicly, this is where you build it properly."
+                    : plan.slug === 'clarity'
+                    ? "Founders who feel their brand no longer reflects their business."
+                    : "Companies launching new product lines or expanding nationally or internationally."}
+                </p>
+              </section>
+
+              <hr className="border-[#0F0000]/10 mb-20" />
+
+              {/* What's Included */}
+              <section className="mb-24">
+                <h2 className="text-[16px] font-bold uppercase text-[#CC3300] mb-12">What&apos;s included</h2>
+                
+                <div className="space-y-20">
+                  {plan.sections.map((section, idx) => (
+                    <div key={idx}>
+                      <h3 className="text-2xl font-black text-[#0F0000] mb-4">{section.title}</h3>
+                      {section.description && (
+                        <p className="text-[#0F0000]/60 mb-8 italic">{section.description}</p>
+                      )}
+                      <ul className="space-y-4">
+                        {section.items.map((item, i) => (
+                          <li key={i} className="flex items-start gap-4 text-lg text-[#0F0000]/80 font-medium">
+                            <MdCheck className="text-[#CC3300] mt-1 shrink-0" size={20} />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                </motion.div>
+                  ))}
+                </div>
+              </section>
 
-                {/* Divider */}
-                <div className="h-[1px] bg-gray-700 dark:bg-gray-800 mb-16"></div>
+              <hr className="border-[#0F0000]/10 mb-20" />
 
-                {/* Sections Breakdown */}
-                <motion.div {...fadeInUp} className="mb-20">
-                    <h2 className="text-2xl md:text-3xl font-customFont font-semibold text-black dark:text-white mb-10">
-                        What&apos;s Included
-                    </h2>
-                    <div className="bg-white border border-black/30 dark:bg-lilBlack rounded-[2rem] p-2 lg:p-2">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 lg:gap-2">
-                            {plan.sections.map((section, idx) => (
-                                <div
-                                    key={idx}
-                                    className={`bg-white dark:bg-lilBlack border border-black/30 dark:border-gray-700 rounded-3xl p-8 h-full ${plan.sections.length !== 4 && section.title.toLowerCase().includes("walk away with")
-                                        ? "md:col-span-2"
-                                        : "md:col-span-1"
-                                        }`}
-                                >
-                                    <h3 className="text-lg font-bold text-black dark:text-white mb-5">{section.title}</h3>
-                                    <ul className="space-y-4">
-                                        {section.items.map((item, itemIdx) => (
-                                            <li key={itemIdx} className="flex items-start text-lg text-gray-700 dark:text-gray-400 space-x-3">
-                                                <FaIcons.FaCheck size={14} className="shrink-0 mt-1 text-orange" />
-                                                <span className="leading-relaxed">{item}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            ))}
-                        </div>
+              {/* Timeline & Investment Details */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mb-24">
+                <div>
+                  <h2 className="text-[16px] font-bold uppercase text-[#CC3300] mb-6">Timeline</h2>
+                  <p className="text-3xl font-black text-[#0F0000] mb-4">{plan.timeline}</p>
+                  <p className="text-[#0F0000]/60 text-sm leading-relaxed font-medium">
+                    Clear milestones are shared inside the client portal once the project begins.
+                  </p>
+                </div>
+                <div>
+                  <h2 className="text-[16px] font-bold uppercase text-[#CC3300] mb-6">Investment</h2>
+                  <p className="text-3xl font-black text-[#0F0000] mb-4">{price}</p>
+                  <p className="text-[#0F0000]/60 text-sm leading-relaxed font-medium">
+                    {plan.investment.details}
+                  </p>
+                </div>
+              </div>
+
+              <hr className="border-[#0F0000]/10 mb-20" />
+
+              {/* What you walk away with */}
+              <section className="mb-24 bg-[#0F0000] text-[#FDF3E6] rounded-[2.5rem] p-10 md:p-16">
+                <h2 className="text-[16px] font-bold uppercase bg-[#CC3300] p-2 rounded-full w-fit text-[#FDF3E6] mb-10">What you walk away with</h2>
+                <div className="space-y-8">
+                  {plan.whatYouWalkAwayWith.map((item, i) => (
+                    <p key={i} className="text-2xl md:text-2xl font-extrabold leading-tight">
+                      {item}
+                    </p>
+                  ))}
+                </div>
+              </section>
+
+              {/* Final CTA */}
+              <section className="mb-20 py-20 border-t border-[#0F0000]/10">
+                <h2 className="text-[16px] font-bold uppercase text-[#CC3300] mb-10">Apply for {plan.stage}</h2>
+                <p className="text-xl md:text-2xl text-[#0F0000] font-bold leading-relaxed mb-12">
+                  {plan.discoveryIntro}
+                </p>
+                <button
+                  onClick={() => setViewState("FORM")}
+                  className="inline-flex items-center justify-between w-full bg-[#0f0000] text-white px-10 py-6 rounded-full text-lg font-bold hover:bg-[#CC3300] transition-colors group"
+                >
+                  Apply for {plan.stage}
+                  <MdArrowOutward className="w-6 h-6 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                </button>
+                <p className="mt-8 text-center text-[#0F0000]/80 text-lg font-medium">
+                  After alignment, you will receive a tailored proposal before payment is made.
+                </p>
+              </section>
+
+              {/* Other Stages Navigation */}
+              <section className="mt-12 pt-20 border-t border-[#0F0000]/10">
+                <h2 className="text-[16px] font-extrabold uppercase text-[#0F0000]/30 mb-8 text-center">Compare Stages</h2>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {pricingPlans.map((otherPlan) => (
+                    <Link
+                      key={otherPlan.slug}
+                      href={`/pricing/${otherPlan.slug}`}
+                      className={`px-4 py-4 rounded-2xl border-2 text-center transition-all flex flex-col items-center gap-1 group ${
+                        otherPlan.slug === plan.slug
+                        ? "bg-[#5C1500] border-[#CC3300] text-white pointer-events-none"
+                        : "bg-white border-[#0F0000]/10 text-[#0F0000] hover:border-[#CC3300] hover:text-[#CC3300]"
+                      }`}
+                    >
+                      <span className="text-[10px] font-black uppercase tracking-widest opacity-60 group-hover:opacity-100">{otherPlan.stage}</span>
+                      <span className="text-[13px] font-bold whitespace-nowrap">{otherPlan.subtitle}</span>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+
+            </motion.div>
+          )}
+
+          {viewState === "FORM" && (
+            <motion.div 
+              key="stage-form"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+            >
+              <QualificationForm 
+                slug={plan.slug} 
+                stage={plan.stage} 
+                onSubmit={() => setViewState("CONFIRMATION")} 
+              />
+              <button
+                onClick={() => setViewState("DETAILS")}
+                className="w-full text-center text-[#0F0000]/40 hover:text-[#CC3300] font-bold uppercase tracking-widest text-xs transition-colors mt-8"
+              >
+                Back to details
+              </button>
+            </motion.div>
+          )}
+
+          {viewState === "CONFIRMATION" && (
+            <motion.div 
+              key="confirmation-content"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              variants={fadeInUp}
+              className="py-10"
+            >
+              <div className="bg-white rounded-[3rem] p-10 md:p-16 border-6 border-[#0F0000] shadow-2xl">
+                <div className="w-16 h-16 bg-[#33CC33] rounded-full flex items-center justify-center text-white mb-10">
+                  <MdCheck size={40} />
+                </div>
+                
+                <h1 className="text-[32px] md:text-[48px] font-black text-[#0F0000] leading-[1.1] mb-8 tracking-tight">
+                  What happens next
+                </h1>
+                <p className="text-xl font-bold text-[#0F0000] mb-12">
+                  We&apos;ll review your application within 24 hours.
+                </p>
+
+                <div className="space-y-12">
+                  <div className="space-y-6">
+                    <p className="text-[#0F0000]/80 leading-relaxed font-medium">
+                      If this stage is aligned with your goals, you&apos;ll receive an email with a discovery call link.
+                    </p>
+                    <div className="bg-[#FDF3E6] rounded-2xl p-8 space-y-4">
+                      <p className="text-[16px] font-bold uppercase tracking-widest text-[#CC3300]">During the call, we&apos;ll talk about:</p>
+                      <ul className="space-y-3 text-lg font-bold text-[#0F0000]">
+                        <li>• Your brand&apos;s current state and goals</li>
+                        <li>• What needs to happen in this stage</li>
+                        <li>• Timeline and investment</li>
+                        <li>• Any questions you have</li>
+                      </ul>
                     </div>
-                </motion.div>
+                    <p className="text-[#0F0000]/60 font-medium">After alignment, you&apos;ll receive a tailored proposal before any payment is made.</p>
+                  </div>
 
-                {/* Retainer Section */}
-                <motion.div {...fadeInUp} className="mb-20">
-                    <div className="bg-black dark:bg-lilBlack rounded-[2rem] p-2 lg:p-3">
-                        <div
-                            onClick={() => setRetainerSelected(!retainerSelected)}
-                            className={`relative cursor-pointer transition-all duration-300 border bg-black dark:bg-lilBlack rounded-[28px] p-8 md:p-12 lg:p-16 text-white h-full ${retainerSelected
-                                ? "border-orange shadow-[0_0_30px_rgba(255,102,0,0.2)]"
-                                : "border-gray-700 dark:border-gray-600"
-                                }`}
-                        >
-                            {/* Selection Indicator */}
-                            <div className={`absolute top-8 right-8 w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${retainerSelected
-                                ? "bg-orange border-orange"
-                                : "border-gray-600 bg-transparent"
-                                }`}>
-                                {retainerSelected && <FaIcons.FaCheck className="text-white" />}
-                            </div>
+                  <hr className="border-[#0F0000]/10" />
 
-                            <span className="text-lg border border-orange/10 font-bold text-orange inline-block bg-orange/20 px-3 py-1 rounded-md mb-6">
-                                Keep Growing After Delivery
-                            </span>
-                            <div className="h-[1px] bg-gray-700 dark:bg-gray-800 my-8"></div>
-                            <h2 className="text-2xl md:text-4xl font-customFont font-semibold mb-4 pr-12">
-                                {plan.retainer.title}
-                            </h2>
-                            <p className="text-gray-400 text-lg mb-8 max-w-2xl">
-                                After your project is delivered, stay consistent and keep growing with a monthly retainer plan tailored to your needs.
-                            </p>
-                            <div className="h-[1px] bg-gray-700 dark:bg-gray-800 mb-8"></div>
-                            <div className="text-3xl md:text-4xl font-customFont font-semibold text-orange mb-8">
-                                {mounted ? retainerPrice : ""}
-                                <span className="text-gray-500 text-lg ml-3 font-normal">/month</span>
-                            </div>
-                            <div className="h-[1px] bg-gray-700 dark:bg-gray-800 mb-8"></div>
-                            <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {plan.retainer.items.map((item, idx) => (
-                                    <li key={idx} className="flex items-start text-lg text-gray-300 space-x-3">
-                                        <FaIcons.FaCheck size={14} className="shrink-0 mt-1 text-orange" />
-                                        <span className="leading-relaxed">{item}</span>
-                                    </li>
-                                ))}
-                            </ul>
+                  <div className="space-y-6">
+                    <h2 className="text-xl font-black text-[#0F0000]">Common question: What about ongoing support?</h2>
+                    <p className="text-[#0F0000]/80 leading-relaxed font-medium">
+                      Some clients ask about maintaining their brand after launch. We offer optional retainers for:
+                    </p>
+                    <ul className="space-y-3 text-[#0F0000] font-bold">
+                      <li>• Consistent social media presence</li>
+                      <li>• Brand updates and new applications</li>
+                      <li>• Ongoing design support</li>
+                    </ul>
+                    <p className="text-[#0F0000]/80 leading-relaxed font-medium">
+                      This can be discussed during or after your project, depending on what makes sense for your business.
+                    </p>
+                  </div>
 
-                            <div className="mt-10 flex items-center gap-3">
-                                <div className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${retainerSelected
-                                    ? "bg-orange text-white"
-                                    : "bg-gray-800 text-gray-400"
-                                    }`}>
-                                    {retainerSelected ? "Retainer Added" : "Click to Add to Package"}
-                                </div>
-                            </div>
-                        </div>
+                  <div className="pt-6">
+                    <div className="inline-flex items-center justify-center w-full bg-[#0F0000] text-white px-10 py-6 rounded-full text-lg font-bold">
+                      We&apos;ll be in touch shortly.
                     </div>
-                </motion.div>
+                  </div>
+                </div>
+              </div>
 
-                {/* CTA */}
-                <motion.div {...fadeInUp} className="bg-black dark:bg-lilBlack/40 rounded-3xl p-8 md:p-16 border border-gray-200 dark:border-gray-800 flex flex-col md:flex-row items-center gap-12 mt-20">
-                    <div className="flex-1 w-full text-left">
-                        <h3 className="text-2xl font-bold text-white mb-2">Order Summary</h3>
-                        <p className="text-gray-400 mb-8 lowercase tracking-tighter">Your selected package and add-ons</p>
-                        <OrderSummary
-                            className="!border-none !bg-transparent !p-0"
-                            packageName={plan.subtitle}
-                            packagePrice={price}
-                            retainerName={plan.retainer.title}
-                            retainerPrice={retainerPrice}
-                            isRetainerSelected={retainerSelected}
-                            showTotal={true}
-                        />
-                    </div>
-
-                    <div className="h-full w-[1px] bg-gray-700 dark:bg-gray-200"></div>
-                    <div className="w-full md:w-auto shrink-0 flex flex-col items-center">
-                        <Button
-                            href={finalLink}
-                            label="Get This Package"
-                            variant="primary"
-                            icon={MdArrowOutward}
-                            className=""
-                        />
-                        <p className="text-lg text-gray-400 mt-6 font-medium text-center">
-                            Next: Project Onboarding & Brief
-                        </p>
-                    </div>
-                </motion.div>
-
-            </div>
-        </div>
-    );
+              <Link
+                href="/#pricing"
+                className="mt-12 block w-full text-center text-[#0F0000]/40 hover:text-[#CC3300] font-bold uppercase tracking-widest text-xs transition-colors"
+              >
+                Return to homepage
+              </Link>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
 }

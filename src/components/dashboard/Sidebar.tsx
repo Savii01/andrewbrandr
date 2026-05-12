@@ -25,7 +25,7 @@ import {
 const navItems = [
     { label: "Command Center", href: "/dashboard", icon: FiGrid },
     { label: "Engagements", href: "/dashboard/engagements", icon: FiBriefcase },
-    { label: "Communications", href: "/dashboard/communications", icon: FiMessageSquare },
+    { label: "Briefs (Inbox)", href: "/dashboard/briefs", icon: FiMessageSquare },
     { label: "Finances", href: "/dashboard/finances", icon: FiDollarSign },
     { label: "Portfolio", href: "/dashboard/portfolio", icon: FiImage },
     { label: "Analytics", href: "/dashboard/analytics", icon: FiBarChart2 },
@@ -90,8 +90,8 @@ export default function DashboardSidebar() {
                         href={item.href}
                         onClick={() => setMobileOpen(false)}
                         className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all ${isActive(item.href)
-                                ? "bg-orange/10 text-orange font-medium"
-                                : "text-[var(--text-secondary)] hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-[var(--text-primary)]"
+                            ? "bg-orange/10 text-orange font-medium"
+                            : "text-[var(--text-secondary)] hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-[var(--text-primary)]"
                             }`}
                     >
                         <item.icon size={18} className="flex-shrink-0" />
@@ -117,8 +117,8 @@ export default function DashboardSidebar() {
                         href={item.href}
                         onClick={() => setMobileOpen(false)}
                         className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all ${isActive(item.href)
-                                ? "bg-orange/10 text-orange font-medium"
-                                : "text-[var(--text-secondary)] hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-[var(--text-primary)]"
+                            ? "bg-orange/10 text-orange font-medium"
+                            : "text-[var(--text-secondary)] hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-[var(--text-primary)]"
                             }`}
                     >
                         <item.icon size={18} className="flex-shrink-0" />

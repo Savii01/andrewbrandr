@@ -71,6 +71,13 @@ export const projects: Project[] = [
         website: "https://glowskincare.co",
         behance: "https://behance.net/glow",
         year: 2024,
+        challenge: "Glow Skincare needed a complete brand refresh and ecommerce-ready website. We crafted a soft, feminine identity, built engaging content visuals, and developed a fast, mobile-optimized web experience with seamless shopping functionality.",
+        solution: "We stripped away the clutter, focusing on whitespace and a refined monochromatic palette. The result is a minimal yet warm identity that allows their interior work to take center stage, supported by a functional, content-heavy website.",
+        testimonial: {
+            author: "Michael Aris",
+            role: "Founder, Glow Skincare",
+            content: "They understood our vision of 'clean living' perfectly. The new branding has brought a sense of calm and clarity to our marketing that our clients genuinely appreciate."
+        }
     },
     {
         id: 4,
@@ -84,6 +91,13 @@ export const projects: Project[] = [
         website: "https://nexera.dev",
         behance: "https://behance.net/nexera",
         year: 2023,
+        challenge: "Nexera was expanding rapidly into global markets but struggled with a fragmented identity that felt outdated next to modern tech competitors. They needed a cohesive, high-performance brand system that communicated reliability and cutting-edge innovation.",
+        solution: "We redefined Nexera's visual language with a modular grid-based identity system. This included a bespoke type-driven logo, a high-contrast color palette, and a comprehensive set of digital assets designed for maximum scalability and impact across all touchpoints.",
+        testimonial: {
+            author: "Sarah Chen",
+            role: "CTO, Nexera Cloud Systems",
+            content: "The transformation was immediate. Our new identity doesn't just look better; it has fundamentally changed how investors and enterprise clients perceive us. The level of detail and strategy behind the design is exceptional."
+        }
     },
     {
         id: 5,
@@ -97,6 +111,13 @@ export const projects: Project[] = [
         website: "https://linkerpay.com",
         behance: "https://behance.net/linkerpay",
         year: 2022,
+        challenge: "Nexera was expanding rapidly into global markets but struggled with a fragmented identity that felt outdated next to modern tech competitors. They needed a cohesive, high-performance brand system that communicated reliability and cutting-edge innovation.",
+        solution: "We redefined Nexera's visual language with a modular grid-based identity system. This included a bespoke type-driven logo, a high-contrast color palette, and a comprehensive set of digital assets designed for maximum scalability and impact across all touchpoints.",
+        testimonial: {
+            author: "Sarah Chen",
+            role: "CTO, LinkerPay Inc.",
+            content: "The transformation was immediate. Our new identity doesn't just look better; it has fundamentally changed how investors and enterprise clients perceive us. The level of detail and strategy behind the design is exceptional."
+        }
     },
     {
         id: 6,
@@ -110,5 +131,12 @@ export const projects: Project[] = [
         website: "https://ecocycle.tech",
         behance: "https://behance.net/ecocycle",
         year: 2023,
+        challenge: "Nexera was expanding rapidly into global markets but struggled with a fragmented identity that felt outdated next to modern tech competitors. They needed a cohesive, high-performance brand system that communicated reliability and cutting-edge innovation.",
+        solution: "We redefined Nexera's visual language with a modular grid-based identity system. This included a bespoke type-driven logo, a high-contrast color palette, and a comprehensive set of digital assets designed for maximum scalability and impact across all touchpoints.",
+        testimonial: {
+            author: "Sarah Chen",
+            role: "CTO, Ecocycle Solutions",
+            content: "The transformation was immediate. Our new identity doesn't just look better; it has fundamentally changed how investors and enterprise clients perceive us. The level of detail and strategy behind the design is exceptional."
+        }
     },
 ];

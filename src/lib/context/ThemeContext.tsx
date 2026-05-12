@@ -26,7 +26,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Handle theme logic
   useEffect(() => {
-    const root = window.document.documentElement;
+    const root = document.getElementById("dashboard-root") || window.document.documentElement;
 
     const applyTheme = (currentTheme: Theme) => {
       let isDark = false;

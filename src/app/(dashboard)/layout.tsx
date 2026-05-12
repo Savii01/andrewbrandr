@@ -1,8 +1,10 @@
 "use client";
 
 import { AuthProvider } from "@/lib/auth-context";
+import { ThemeProvider } from "@/lib/context/ThemeContext";
 import DashboardSidebar from "@/components/dashboard/Sidebar";
 import DashboardHeader from "@/components/dashboard/Header";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 export default function DashboardLayout({
     children,
@@ -11,15 +13,19 @@ export default function DashboardLayout({
 }) {
     return (
         <AuthProvider>
-            <div className="min-h-screen bg-white dark:bg-black">
-                <DashboardSidebar />
-                <div className="lg:pl-[var(--sidebar-width)] transition-all duration-300">
-                    <DashboardHeader />
-                    <main className="min-h-screen p-6 md:p-8 lg:p-10 pt-[calc(var(--header-height)+24px)] lg:pt-[calc(var(--header-height)+24px)]">
-                        {children}
-                    </main>
-                </div>
-            </div>
+            <ThemeProvider>
+                <ProtectedRoute>
+                    <div id="dashboard-root" className="min-h-screen bg-white dark:bg-black">
+                        <DashboardSidebar />
+                        <div className="lg:pl-[var(--sidebar-width)] transition-all duration-300">
+                            <DashboardHeader />
+                            <main className="min-h-screen p-6 md:p-8 lg:p-10 pt-[calc(var(--header-height)+24px)] lg:pt-[calc(var(--header-height)+24px)]">
+                                {children}
+                            </main>
+                        </div>
+                    </div>
+                </ProtectedRoute>
+            </ThemeProvider>
         </AuthProvider>
     );
 }

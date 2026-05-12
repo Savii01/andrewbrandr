@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Creator: CorelDRAW 2021 (64-Bit) -->
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="2.39863in" height="0.193583in" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+viewBox="0 0 171.31 13.83"
+ xmlns:xlink="http://www.w3.org/1999/xlink"
+ xmlns:xodm="http://www.corel.com/coreldraw/odm/2003">
+ <defs>
+  <font id="FontID0" horiz-adv-x="734" font-variant="normal" style="fill-rule:nonzero" font-style="normal" font-weight="900">
+	<font-face 
+		font-family="Cabinet Grotesk Black">
+		<font-face-src>
+			<font-face-name name="Cabinet Grotesk Black"/>
+		</font-face-src>
+	</font-face>
+   <missing-glyph><path d="M0 0z"/></missing-glyph>
+   <glyph unicode="A" horiz-adv-x="734" d="M196.994 0l41.0013 125.007 254.006 0 41.0013 -125.007 196.994 0 -237.001 670.001 -250.995 0 -237.001 -670.001 191.993 0zm123.004 373.004l45.0074 167.997 44.9937 -167.997 31.9943 -97.9997 -153.99 0 31.9943 97.9997z"/>
+   <glyph unicode="B" horiz-adv-x="652" d="M394.996 0c141.004,0 238.009,38.9982 238.009,170.995 0,101.011 -67.0001,169.006 -257.999,169.006 98.9944,0 237.995,17.0055 237.995,159.999 0,90.0011 -51.9976,170.001 -215.008,170.001l-357.988 0 0 -670.001 354.99 0zm-39.9929 510.002c42.9907,0 67.9948,-15.0025 67.9948,-51.0029 0,-34.9921 -25.0041,-48.9998 -67.9948,-48.9998l-135.008 0 0 100.003 135.008 0zm15.0025 -239.998c55.9901,0 78.9911,-18.0002 78.9911,-55.009 0,-36.0004 -23.001,-54.9954 -78.9911,-54.9954l-150.011 0 0 110.004 150.011 0z"/>
+   <glyph unicode="D" horiz-adv-x="682" d="M332.003 0c198.002,0 324.999,141.999 324.999,335 0,193.002 -130.008,335 -327.996,335l-288.998 0 0 -670.001 291.996 0zm-12.9994 510.002c105.004,0 147.994,-76.007 147.994,-175.001 0,-98.9944 -39.9929,-175.001 -144.996,-175.001l-102.006 0 0 350.003 99.008 0z"/>
+   <glyph unicode="E" horiz-adv-x="582" d="M553.006 0l0 159.999 -333.011 0 0 95.0019 283.003 0 0 159.999 -283.003 0 0 95.0019 333.011 0 0 159.999 -512.999 0 0 -670.001 512.999 0z"/>
+   <glyph unicode="N" horiz-adv-x="680" d="M219.995 0l0 187.006 -15.9972 216.997 58.0068 -103 203.998 -301.003 173.993 0 0 670.001 -180.002 0 0 -210.007 13.013 -196.994 -56.0037 105.004 -197.008 301.998 -179.989 0 0 -670.001 179.989 0z"/>
+   <glyph unicode="R" horiz-adv-x="667" d="M219.995 0l0 239.998 14.0077 0c54.9954,0 79.9995,-16.9919 106.993,-61.0045l110.999 -178.994 205.006 0 -95.9966 151.006c-34.011,52.9923 -64.0023,95.9966 -133.005,112.988 113.997,10.0016 201,67.0001 201,195.999 0,148.008 -111.994,210.007 -268,210.007l-320.993 0 0 -670.001 179.989 0zm143.007 510.002c51.0029,0 75.9934,-20.998 75.9934,-63.0076 0,-40.9876 -24.9905,-62.9939 -75.9934,-62.9939l-143.007 0 0 126.002 143.007 0z"/>
+   <glyph unicode="W" horiz-adv-x="1007" d="M409.004 0l62.9939 296.002 32.008 252.998 32.989 -252.998 61.9992 -296.002 254.006 0 144.996 670.001 -207.99 0 -52.0112 -337.998 -18.9949 -219 -28.0019 193.996 -67.0001 363.002 -239.998 0 -67.0001 -363.002 -28.9966 -193.996 -18.0002 219 -51.9976 337.998 -208.004 0 144.996 -670.001 254.006 0z"/>
+  </font>
+  <style type="text/css">
+   <![CDATA[
+    @font-face { font-family:"Cabinet Grotesk Black";font-variant:normal;font-style:normal;font-weight:900;src:url("#FontID0") format(svg)}
+    .fil1 {fill:#CC3300}
+    .fil0 {fill:#FDF3E6}
+    .fnt0 {font-weight:900;font-size:20.64px;font-family:'Cabinet Grotesk Black'}
+   ]]>
+  </style>
+ </defs>
+ <g id="Layer_x0020_1">
+  <metadata id="CorelCorpID_0Corel-Layer"/>
+  <g id="_2503221777152">
+   <text x="-0.1" y="13.83"  class="fil0 fnt0">ANDREWBRANDR</text>
+   <circle class="fil1" cx="168.2" cy="10.25" r="3.12"/>
+  </g>
+ </g>
+</svg>

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { ThemeProvider } from "@/lib/context/ThemeContext";
 import CursorFollower from "@/components/public/CursorFollower";
 
 export const metadata: Metadata = {
@@ -16,15 +15,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="dark" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/images/ig-profile.png" />
       </head>
-      <body className="bg-white dark:bg-black text-black dark:text-white font-sans antialiased overflow-x-hidden">
-        <ThemeProvider>
-          <CursorFollower />
-          {children}
-        </ThemeProvider>
+      <body className="bg-[#0F0000] text-white font-sans antialiased overflow-x-hidden">
+        <CursorFollower />
+        {children}
       </body>
     </html>
   );

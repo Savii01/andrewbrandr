@@ -3,15 +3,19 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { FaSun, FaMoon } from "react-icons/fa";
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
-import { useThemeContext } from "@/lib/context/ThemeContext";
 import Button from "./Button";
 import { MdArrowOutward } from "react-icons/md";
 
+const navLinks = [
+    { label: "Work", href: "/projects" },
+    { label: "Process", href: "/#process" },
+    { label: "Stages", href: "/#stages" },
+    { label: "About", href: "/about" },
+];
+
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
-    const { theme, setTheme, darkMode } = useThemeContext();
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -20,130 +24,119 @@ const Navbar = () => {
 
     const closeMenu = () => setIsOpen(false);
 
-    if (!mounted) return <div className="fixed w-full h-20 bg-white dark:bg-black z-[1000]" />;
+    if (!mounted)
+        return (
+            <div className="fixed top-4 left-0 right-0 h-[48px] z-[1000]" />
+        );
 
     return (
         <>
-            {/* Top Bar */}
-            <div className="fixed w-full h-20 bg-white dark:bg-black text-black rounded-b-xl dark:text-white border-b border-black dark:border-gray-700 flex justify-between items-center px-4 md:px-8 lg:px-16 z-[1000]">
-                {/* Logo Section */}
-                <Link href="/" className="flex items-center gap-2">
-                    <div className="relative w-10 h-10 rounded-full overflow-hidden bg-black">
+            {/* ── Desktop: Centered Floating Pill ── */}
+            <header className="fixed top-4 left-0 right-0 z-[1000] flex justify-center pointer-events-none">
+                <nav className="pointer-events-auto flex items-center gap-2 bg-[#0F0000]/50 backdrop-blur-sm border border-white/10 rounded-full px-3 py-2 shadow-lg">
+                    {/* Logo */}
+                    <Link
+                        href="/"
+                        className="hidden lg:flex items-center px-3 py-1.5 hover:opacity-80"
+                    >
                         <Image
-                            src="/images/ig-profile.png"
-                            alt="Logo"
-                            fill
-                            className="object-cover"
+                            src="/brand_assets/secondary_logo_white.png"
+                            alt="AndrewBrandr"
+                            width={160}
+                            height={32}
+                            className="object-contain"
+                            priority
+                        />
+                    </Link>
+
+                    {/* Desktop Links */}
+                    <div className="hidden lg:flex items-center gap-0.5">
+                        {navLinks.map((link) => (
+                            <Link
+                                key={link.label}
+                                href={link.href}
+                                className="px-4 py-2 text-[14px] text-white/60 font-medium rounded-full hover:text-white/90 hover:bg-white/5"
+                            >
+                                {link.label}
+                            </Link>
+                        ))}
+                    </div>
+
+                    {/* Desktop CTA */}
+                    <Button
+                        href="/work-with-me"
+                        label="Start a Project"
+                        icon={MdArrowOutward}
+                        variant="secondary"
+                        className="hidden lg:flex items-center px-5 py-2 !bg-[#fdf3e6] !text-[#0F0000] !border-[#fdf3e6]/20 hover:!border-[#fdf3e6]/40 transition-colors !text-[14px] !rounded-full !font-bold hover:!bg-[#cc3300] hover:!text-white ml-1"
+                        fullWidth={false}
+                    />
+
+                    {/* Mobile: Logo + Hamburger */}
+                    <div className="flex lg:hidden items-center w-full justify-between px-2">
+                        <Link
+                            href="/"
+                            className="flex items-center"
+                        >
+                            <Image
+                                src="/brand_assets/secondary_logo_white.png"
+                                alt="AndrewBrandr"
+                                width={120}
+                                height={24}
+                                className="object-contain"
+                                priority
+                            />
+                        </Link>
+                        <AiOutlineMenu
+                            size={20}
+                            className="text-white/70 cursor-pointer hover:text-white ml-4"
+                            onClick={() => setIsOpen(true)}
                         />
                     </div>
-                    <h2 className="text-[16px] tracking-tighter font-bold md:text-[20px] dark:text-white">
-                        AndrewBrandr
-                    </h2>
-                </Link>
+                </nav>
+            </header>
 
-                {/* Desktop Menu & Theme Toggle */}
-                <div className="hidden lg:flex items-center gap-4">
-                    <ul className="flex lg:items-center lg:justify-center gap-6 lg:gap-10">
-                        <li>
-                            <Link href="/" className="cursor-pointer hover:font-semibold hover:text-orange py-2 px-4 dark:text-white">
-                                Home
-                            </Link>
-                        </li>
-                        <li>
-                            <Link href="/about" className="cursor-pointer hover:font-semibold hover:text-orange py-2 px-4 dark:text-white">
-                                About
-                            </Link>
-                        </li>
-                        <li>
-                            <Link href="/projects" className="cursor-pointer hover:font-semibold hover:text-orange py-2 px-4 dark:text-white">
-                                Projects
-                            </Link>
-                        </li>
-                        <li>
-                            <Button
-                                href="/work-with-me"
-                                label="Let's Work together"
-                                variant="secondary"
-                                icon={MdArrowOutward}
-                                fullWidth={false}
-                                className="!py-1"
-                            />
-                        </li>
-                    </ul>
-                    {/* Theme Toggle Button for Desktop */}
-                    <button
-                        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                        className="ml-4 p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-white transition"
-                        aria-label="Toggle Dark Mode"
-                    >
-                        {darkMode ? <FaSun size={24} className="hover:text-orange" /> : <FaMoon size={24} className="hover:text-orange" />}
-                    </button>
-                </div>
-
-                {/* Mobile Menu Icons */}
-                <div className="flex lg:hidden items-center">
-                    {/* Mobile Theme Toggle */}
-                    <button
-                        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                        className="mr-4 p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
-                        aria-label="Toggle Dark Mode"
-                    >
-                        {darkMode ? <FaSun size={24} className="hover:text-orange" /> : <FaMoon size={24} className="hover:text-orange" />}
-                    </button>
-                    <AiOutlineMenu
-                        size={24}
-                        className="text-black dark:text-white cursor-pointer hover:font-bold"
-                        onClick={() => setIsOpen(true)}
-                    />
-                </div>
-            </div>
-
-            {/* Mobile Menu Overlay */}
+            {/* ── Mobile Overlay ── */}
             {isOpen && (
                 <div
-                    className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-md z-[1000]"
+                    className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[1000]"
                     onClick={closeMenu}
-                ></div>
+                />
             )}
 
-            {/* Mobile Menu */}
+            {/* ── Mobile Drawer ── */}
             <div
                 className={`${isOpen ? "translate-x-0" : "translate-x-full"
-                    } fixed top-0 right-0 h-full w-3/4 sm:w-1/2 md:w-3/4 lg:hidden bg-white dark:bg-gray-900 text-black dark:text-white border-l-2 border-orange transition-transform duration-300 ease-in-out flex flex-col p-6 z-[1001] shadow-2xl`}
+                    } fixed top-0 right-0 h-full w-4/5 sm:w-1/2 lg:hidden bg-[#0F0000] text-white border-l border-white/10 transition-transform duration-300 ease-in-out flex flex-col p-8 z-[1001]`}
             >
-                {/* Close Icon */}
                 <AiOutlineClose
                     size={24}
-                    className="absolute top-5 right-5 cursor-pointer text-black dark:text-white"
+                    className="absolute top-6 right-6 cursor-pointer text-white/60 hover:text-white"
                     onClick={closeMenu}
                 />
 
-                {/* Mobile Menu Links */}
                 <ul className="flex flex-col gap-6 pt-16">
-                    <li>
-                        <Link href="/" className="cursor-pointer text-lg" onClick={closeMenu}>
-                            Home
-                        </Link>
-                    </li>
-                    <li>
-                        <Link href="/about" className="cursor-pointer text-lg" onClick={closeMenu}>
-                            About
-                        </Link>
-                    </li>
-                    <li>
-                        <Link href="/projects" className="cursor-pointer text-lg" onClick={closeMenu}>
-                            Projects
-                        </Link>
-                    </li>
-                    <li>
-                        <Link href="/work-with-me" className="cursor-pointer text-lg hover:text-orange transition-all" onClick={closeMenu}>
-                            Work with me
-                        </Link>
-                    </li>
-                    <li>
-                        <Link href="/send-message" className="cursor-pointer text-lg hover:text-orange transition-all" onClick={closeMenu}>
-                            Send a Message
-                        </Link>
+                    {navLinks.map((link) => (
+                        <li key={link.label}>
+                            <Link
+                                href={link.href}
+                                className="text-xl font-bold text-white/80 hover:text-white"
+                                onClick={closeMenu}
+                            >
+                                {link.label}
+                            </Link>
+                        </li>
+                    ))}
+                    <li className="pt-6 border-t border-white/10">
+                        <Button
+                            href="/work-with-me"
+                            label="Start a Project"
+                            icon={MdArrowOutward}
+                            variant="secondary"
+                            className="flex items-center justify-center w-full py-3 px-6 !bg-[#fdf3e6] !text-[#0F0000] !border-[#fdf3e6]/20 hover:!border-[#fdf3e6]/40 transition-colors !text-[14px] !rounded-full !font-bold hover:!bg-[#cc3300] hover:!text-white"
+                            fullWidth={true}
+                            onClick={closeMenu}
+                        />
                     </li>
                 </ul>
             </div>

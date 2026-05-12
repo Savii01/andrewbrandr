@@ -5,7 +5,8 @@ import { motion, Variants } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 
 import Hero from "@/components/public/Hero";
-import TrustedBrands from "@/components/public/TrustedBrands";
+import SocialProofs from "@/components/public/SocialProofs";
+import TheShift from "@/components/public/TheShift";
 import ProjectSlider from "@/components/public/ProjectSlider";
 import AboutMe from "@/components/public/AboutMe";
 import Processes from "@/components/public/Processes";
@@ -33,7 +34,15 @@ export default function Home() {
       </SectionWrapper>
 
       <SectionWrapper options={sectionOptions} variants={fadeInUp}>
-        <TrustedBrands />
+        <SocialProofs />
+      </SectionWrapper>
+
+      <SectionWrapper options={sectionOptions} variants={fadeInUp}>
+        <TheShift />
+      </SectionWrapper>
+
+      <SectionWrapper options={sectionOptions} variants={fadeInUp}>
+        <Processes />
       </SectionWrapper>
 
       <SectionWrapper options={sectionOptions} variants={fadeInUp}>
@@ -41,20 +50,18 @@ export default function Home() {
       </SectionWrapper>
 
       <SectionWrapper options={sectionOptions} variants={fadeInUp}>
-        <AboutMe />
+        <Pricing />
       </SectionWrapper>
 
       <SectionWrapper options={sectionOptions} variants={fadeInUp}>
-        <Processes />
+        <AboutMe />
       </SectionWrapper>
 
       {/* <SectionWrapper options={sectionOptions} variants={fadeInUp}>
         <Services />
       </SectionWrapper> */}
 
-      <SectionWrapper options={sectionOptions} variants={fadeInUp}>
-        <Pricing />
-      </SectionWrapper>
+
 
       <SectionWrapper options={sectionOptions} variants={fadeInUp}>
         <Testimonials />

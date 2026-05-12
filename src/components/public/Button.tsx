@@ -31,51 +31,34 @@ const Button: React.FC<ButtonProps> = ({
     const isWhatsapp = variant === "whatsapp";
 
     const baseStyles = `${fullWidth ? "flex w-full" : "inline-flex w-auto"
-        } items-center justify-between gap-4 text-[15px] sm:text-[16px] py-2 px-2 pl-6 rounded-xl transition-all group`;
+        } items-center justify-center gap-2 text-[15px] sm:text-[16px] py-3 px-6 rounded-[55px] transition-all duration-300 group`;
 
     let variantStyles = "";
-    let iconWrapperStyles = "";
 
     if (isPrimary) {
         variantStyles =
             "text-white bg-gradient-to-b from-[#C9482A] to-[#AF1600] border border-[#FF6600] " +
-            "hover:from-black hover:to-black hover:text-white hover:border-black " +
-            "dark:hover:from-[#FFF1E3] dark:hover:to-[#FFF1E3] dark:hover:text-black dark:hover:border-[#FFF1E3]";
-        iconWrapperStyles =
-            "p-2.5 rounded-xl bg-white/10 dark:bg-black/20 " +
-            "group-hover:bg-white/10 dark:group-hover:bg-black/10 transition-colors";
+            "hover:from-black hover:to-black hover:text-white hover:border-black";
     } else if (isSecondary) {
         variantStyles =
-            "text-black dark:text-white bg-transparent border border-gray-300 dark:border-gray-800 " +
-            "hover:bg-black hover:text-white hover:border-black " +
-            "dark:hover:bg-[#FFF1E3] dark:hover:text-black dark:hover:border-[#FFF1E3]";
-        iconWrapperStyles =
-            "p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 " +
-            "group-hover:bg-white/10 dark:group-hover:bg-black/10 transition-colors";
+            "text-black bg-transparent border border-gray-300 " +
+            "hover:bg-black hover:text-white hover:border-black";
     } else if (isOrange) {
         variantStyles =
             "bg-orange text-white border border-transparent " +
-            "hover:bg-black hover:text-white " +
-            "dark:hover:bg-white dark:hover:text-black";
-        iconWrapperStyles =
-            "p-2.5 rounded-xl bg-white/20 " +
-            "group-hover:bg-white/10 dark:group-hover:bg-black/10 transition-colors";
+            "hover:bg-[#5C1500] hover:text-white";
     } else if (isWhatsapp) {
         variantStyles =
             "bg-green text-black border border-transparent " +
-            "hover:bg-black hover:text-white " +
-            "dark:hover:bg-black dark:hover:text-white";
-        iconWrapperStyles =
-            "p-2.5 rounded-xl bg-black/10 " +
-            "group-hover:bg-white/10 transition-colors";
+            "hover:bg-black hover:text-white";
     }
 
     const content = (
         <>
-            <span className="font-medium">{label}</span>
+            <span className="font-bold tracking-wide whitespace-nowrap">{label}</span>
             {Icon && (
-                <div className={iconWrapperStyles}>
-                    <Icon className="w-5 h-5 opacity-90" />
+                <div className="flex items-center justify-center transition-colors">
+                    <Icon className="w-[1em] h-[1em] opacity-90" />
                 </div>
             )}
         </>

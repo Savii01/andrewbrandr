@@ -1,194 +1,230 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { MdArrowOutward } from "react-icons/md";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Navigation, Pagination } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
+import Image from "next/image";
+import { motion, useMotionValue, useSpring } from "framer-motion";
+import { MdArrowOutward, MdArrowBack, MdArrowForward } from "react-icons/md";
 import { projects } from "@/data";
 
-import Button from "./Button";
+export default function ProjectSlider() {
+  const total = projects.length;
+  const displayItems = [...projects, ...projects, ...projects];
+  
+  const [index, setIndex] = useState(total);
+  const [hoveredId, setHoveredId] = useState<number | null>(null);
+  const [isResetting, setIsResetting] = useState(false);
+  const [cardWidth, setCardWidth] = useState(540);
+  const [windowWidth, setWindowWidth] = useState(720);
 
-const ProjectSlider = () => {
-  const prevRef = useRef<HTMLButtonElement>(null);
-  const nextRef = useRef<HTMLButtonElement>(null);
-  const swiperRef = useRef<any>(null);
+  // Mouse tracking for floating button
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const springConfig = { damping: 25, stiffness: 200 };
+  const smoothX = useSpring(mouseX, springConfig);
+  const smoothY = useSpring(mouseY, springConfig);
 
+  // Responsive logic
   useEffect(() => {
-    const swiperInstance = swiperRef.current?.swiper;
-
-    if (swiperInstance) {
-      swiperInstance.params.navigation.prevEl = prevRef.current;
-      swiperInstance.params.navigation.nextEl = nextRef.current;
-      swiperInstance.navigation.init();
-      swiperInstance.navigation.update();
-
-      setTimeout(() => {
-        const swiperEl = swiperInstance.el;
-        if (!swiperEl) return;
-
-        const handleMouseEnter = () => swiperInstance.autoplay?.stop();
-        const handleMouseLeave = () => swiperInstance.autoplay?.start();
-
-        swiperEl.addEventListener("mouseenter", handleMouseEnter);
-        swiperEl.addEventListener("mouseleave", handleMouseLeave);
-
-        return () => {
-          swiperEl.removeEventListener("mouseenter", handleMouseEnter);
-          swiperEl.removeEventListener("mouseleave", handleMouseLeave);
-        };
-      }, 0);
-    }
+    const handleResize = () => {
+      const width = window.innerWidth;
+      // On mobile, use full viewport width. On desktop, cap at 720 container.
+      const viewWidth = Math.min(width, 720);
+      setWindowWidth(viewWidth);
+      
+      if (width < 640) {
+        setCardWidth(width - 32); // Card width with padding for visible borders
+      } else {
+        setCardWidth(540);
+      }
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    mouseX.set(e.clientX - rect.left);
+    mouseY.set(e.clientY - rect.top);
+  };
+
+  const gap = 16;
+  const totalUnitWidth = cardWidth + gap;
+  const centerOffset = (windowWidth - cardWidth) / 2;
+
+  const next = useCallback(() => {
+    if (isResetting) return;
+    setIndex((prev) => prev + 1);
+  }, [isResetting]);
+
+  const prev = useCallback(() => {
+    if (isResetting) return;
+    setIndex((prev) => prev - 1);
+  }, [isResetting]);
+
+  useEffect(() => {
+    if (index >= total * 2) {
+      const timer = setTimeout(() => {
+        setIsResetting(true);
+        setIndex(total);
+        setTimeout(() => setIsResetting(false), 50);
+      }, 400);
+      return () => clearTimeout(timer);
+    }
+    if (index < total) {
+      const timer = setTimeout(() => {
+        setIsResetting(true);
+        setIndex(total * 2 - 1);
+        setTimeout(() => setIsResetting(false), 50);
+      }, 400);
+      return () => clearTimeout(timer);
+    }
+  }, [index, total]);
+
+  useEffect(() => {
+    if (hoveredId !== null) return;
+    const timer = setInterval(next, 5000);
+    return () => clearInterval(timer);
+  }, [next, hoveredId]);
+
   return (
-    <div className="relative mx-auto py-6 px-6 lg:px-32 2xl:px-[350px] bg-white dark:bg-black text-center">
-      <h1 className="text-center text-[24px] md:text-[36px] lg:text-[40px] font-customFont font-semibold text-black dark:text-white mb-6 leading-tight mt-10">
-        Latest Works
-      </h1>
-      <p className="text-gray-800 dark:text-gray-200 text-[16px] mb-10 text-center">
-        These are a few of my recent works, showcasing a blend of creativity and
-        strategy.
-      </p>
+    <section className="bg-[#FDF3E6] py-20 md:py-28 flex justify-center overflow-hidden">
+      <div className="max-w-[720px] w-full flex flex-col items-center">
 
-      <Swiper
-        ref={swiperRef}
-        modules={[Navigation, Pagination, Autoplay]}
-        spaceBetween={2}
-        slidesPerView={1}
-        centeredSlides={true}
-        loop={true}
-        autoplay={{
-          delay: 3000,
-          disableOnInteraction: false,
-        }}
-        pagination={{
-          el: ".custom-pagination",
-          clickable: true,
-          renderBullet: (index, className) => `
-            <span class="${className} w-3 h-3 mx-1 rounded-full bg-gray-300 dark:bg-gray-500 transition-all duration-300 transform scale-100 hover:scale-125 inline-block cursor-pointer"></span>
-          `,
-        }}
-        breakpoints={{
-          1024: {
-            slidesPerView: 1.4,
-            spaceBetween: 1,
-          },
-        }}
-        navigation={{ prevEl: prevRef.current, nextEl: nextRef.current }}
-        className="w-full"
-        onSlideChange={(swiper) => {
-          swiper.slides.forEach((slide, index) => {
-            if (index === swiper.activeIndex) {
-              slide.style.opacity = "1";
-              slide.style.transform = "scale(1)";
-            } else {
-              slide.style.opacity = "0.5";
-              slide.style.transform = "scale(0.9)";
-            }
-          });
-        }}
-      >
-        {projects.map((project) => (
-          <SwiperSlide
-            key={project.id}
-            className="rounded-xl overflow-hidden transition-all duration-700 ease-in-out"
-          >
-            <div
-              className="bg-gray-200 dark:bg-black border border-gray-400 dark:border-gray-600 cursor-grab hover:bg-gray-300 dark:hover:bg-lilBlack dark:text-white rounded-lg lg:rounded-3xl relative group"
-              onMouseMove={(e) => {
-                const card = e.currentTarget;
-                const rect = card.getBoundingClientRect();
-                const btn = card.querySelector(".floating-btn") as HTMLElement;
-                if (btn) {
-                  const x = e.clientX - rect.left;
-                  const y = e.clientY - rect.top;
-                  btn.style.left = `${x}px`;
-                  btn.style.top = `${y}px`;
-                }
-              }}
-              onMouseEnter={(e) => {
-                const btn = e.currentTarget.querySelector(".floating-btn") as HTMLElement;
-                if (btn) btn.style.opacity = "1";
-              }}
-              onMouseLeave={(e) => {
-                const btn = e.currentTarget.querySelector(".floating-btn") as HTMLElement;
-                if (btn) btn.style.opacity = "0";
-              }}
+        {/* ── Header ── */}
+        <div className="px-4 w-full flex flex-col items-center text-center">
+          <span className="bg-[#CC3300] text-white text-[14px] font-bold px-8 py-2.5 rounded-full mb-5">
+            Works
+          </span>
+          <h2 className="text-[#0F0000] text-[24px] sm:text-[28px] md:text-[30px] font-bold tracking-tight leading-[1.15] mb-14">
+            Every project starts with a problem.
+            <br />
+            Here&apos;s how we solved them.
+          </h2>
+        </div>
+
+        {/* ── Seamless Infinite Engine ── */}
+        <div className="relative w-full">
+          <div className="relative w-full h-[380px] sm:h-[440px] md:h-[400px] overflow-hidden rounded-[2rem]">
+            
+            <motion.div
+              className="flex gap-[16px] h-full"
+              animate={{ x: centerOffset - index * totalUnitWidth }}
+              transition={isResetting ? { duration: 0 } : { type: "spring", damping: 30, stiffness: 200 }}
             >
-              <img
-                src={project.image}
-                alt={project.name}
-                className="w-full h-[250px] md:h-[500px] object-cover rounded-t-lg lg:rounded-t-3xl cursor-grabbing"
-              />
-              <div className="p-2 md:p-6 md:px-10 flex flex-col md:flex-row md:items-center md:justify-between gap-2 text-left">
-                <h3 className="text-md font-bold text-black dark:text-white">{project.name}</h3>
+              {displayItems.map((project, i) => {
+                const isHovered = hoveredId === i;
 
-                <div className="hidden md:flex flex-wrap gap-2">
-                  {project.category.map((tag, index) => (
-                    <span
-                      key={index}
-                      className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200 transition-transform duration-300 hover:scale-105"
+                return (
+                  <Link 
+                    key={`${project.id}-${i}`} 
+                    href={`/projects/${project.id}`} 
+                    className="flex-shrink-0 group"
+                    style={{ width: `${cardWidth}px` }}
+                  >
+                    <motion.div
+                      className="relative w-full h-full border-6 border-[#0f0000] rounded-[1.5rem] md:rounded-[2rem] overflow-hidden"
+                      onMouseMove={handleMouseMove}
+                      onMouseEnter={() => setHoveredId(i)}
+                      onMouseLeave={() => setHoveredId(null)}
                     >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+                      <Image
+                        src={project.image}
+                        alt={project.name}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        sizes="600px"
+                      />
 
-                {/* 🧭 Floating “View Project” button */}
-                <Link
-                  href={`/projects/${project.id}`}
-                  className="floating-btn absolute z-50 px-4 py-2 bg-black text-white text-xs md:text-sm rounded-lg opacity-0 transition-all duration-200 ease-out transform -translate-x-1/2 -translate-y-1/2 hover:scale-110 flex items-center justify-center whitespace-nowrap pointer-events-auto"
-                >
-                  View Project →
-                </Link>
-              </div>
-            </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: isHovered ? 1 : 0 }}
+                        className="absolute inset-0 bg-gradient-to-tl from-[#5C1500]/90 via-[#0f0000]/80 to-transparent backdrop-blur-[2px] z-10 flex flex-col justify-end p-8 sm:p-10 rounded-3xl text-left pointer-events-none"
+                      >
+                        <h3 className="text-[#FDF3E6] text-2xl sm:text-3xl font-extrabold mb-2 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                          {project.name}
+                        </h3>
+                        <p className="text-[#FDF3E6] text-xs sm:text-sm mb-6 line-clamp-3 translate-y-4 group-hover:translate-y-0 transition-transform duration-500 font-bold delay-75">
+                          {project.description}
+                        </p>
+                        <div className="flex flex-wrap gap-2 translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-150">
+                          {project.category.map((cat) => (
+                            <span
+                              key={cat}
+                              className="text-[#0f0000] text-[10px] sm:text-[11px] font-bold px-3 py-1.5 border border-[#0f0000] rounded-md bg-[#FDF3E6]"
+                            >
+                              {cat}
+                            </span>
+                          ))}
+                        </div>
+                      </motion.div>
 
-      {/* Custom Navigation Buttons */}
-      <button
-        ref={prevRef}
-        className="absolute left-10 lg:left-[10%] xl:left-[15%] top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black text-white w-10 h-10 rounded-lg z-10 flex items-center justify-center transition-all"
-      >
-        &#10094;
-      </button>
-      <button
-        ref={nextRef}
-        className="absolute right-10 lg:right-[10%] xl:right-[15%] top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black text-white w-10 h-10 rounded-lg z-10 flex items-center justify-center transition-all"
-      >
-        &#10095;
-      </button>
+                      <motion.div
+                        className="absolute z-40 bg-[#CC3300] text-white px-6 py-3 rounded-full text-xs font-bold shadow-2xl pointer-events-none flex items-center gap-2 whitespace-nowrap"
+                        style={{
+                          left: smoothX,
+                          top: smoothY,
+                          x: "-50%",
+                          y: "-50%",
+                          opacity: isHovered ? 1 : 0,
+                          scale: isHovered ? 1 : 0.5,
+                        }}
+                      >
+                        View Project
+                        <MdArrowOutward className="w-4 h-4" />
+                      </motion.div>
+                    </motion.div>
+                  </Link>
+                );
+              })}
+            </motion.div>
 
-      {/* Custom Pagination */}
-      <div className="flex justify-center mt-6">
-        <div className="custom-pagination flex justify-center items-center gap-2"></div>
+            {/* ── Fading Edges (Desktop Only) ── */}
+            <div
+              className="absolute inset-y-0 left-0 w-12 md:w-24 z-20 pointer-events-none hidden md:block"
+              style={{ background: 'linear-gradient(to right, #FDF3E6 0%, transparent 100%)' }}
+            />
+            <div
+              className="absolute inset-y-0 right-0 w-12 md:w-24 z-20 pointer-events-none hidden md:block"
+              style={{ background: 'linear-gradient(to left, #FDF3E6 0%, transparent 100%)' }}
+            />
+
+            {/* ── Navigation Arrows ── */}
+            <button
+              onClick={prev}
+              aria-label="Previous project"
+              className="absolute left-3 md:left-6 top-1/2 -translate-y-1/2 z-30
+                         w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#CC3300] hover:bg-[#a32900] text-white
+                         flex items-center justify-center shadow-xl transition-transform hover:scale-110"
+            >
+              <MdArrowBack className="w-5 h-5 md:w-6 md:h-6" />
+            </button>
+            <button
+              onClick={next}
+              aria-label="Next project"
+              className="absolute right-3 md:right-6 top-1/2 -translate-y-1/2 z-30
+                         w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#CC3300] hover:bg-[#a32900] text-white
+                         flex items-center justify-center shadow-xl transition-transform hover:scale-110"
+            >
+              <MdArrowForward className="w-5 h-5 md:w-6 md:h-6" />
+            </button>
+          </div>
+        </div>
+
+        {/* ── View All Work CTA ── */}
+        <div className="mt-14 px-4 w-full flex justify-center">
+          <Link
+            href="/projects"
+            className="inline-flex items-center gap-2 bg-[#1a1a1a] text-white text-[15px] font-bold
+                       px-10 py-3.5 rounded-full hover:bg-[#CC3300] transition-colors"
+          >
+            View All Work
+            <MdArrowOutward className="w-5 h-5" />
+          </Link>
+        </div>
+
       </div>
-
-      {/* View All Projects Link */}
-      <div className="flex justify-center mt-8">
-        <Button
-          href="/projects"
-          label="View All Projects"
-          variant="primary"
-          icon={MdArrowOutward}
-          fullWidth={false}
-        />
-      </div>
-
-      <style jsx global>{`
-        .custom-pagination .swiper-pagination-bullet-active {
-            background-color: #F23F03 !important;
-            opacity: 1 !important;
-        }
-      `}</style>
-    </div>
+    </section>
   );
-};
-
-export default ProjectSlider;
+}
