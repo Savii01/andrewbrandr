@@ -44,10 +44,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 const session = JSON.parse(adminSession);
                 setUser(session);
                 setLoading(false);
-                // We return early but still set up the listener in case they sign in with Firebase later
             } catch (e) {
                 localStorage.removeItem('admin_session');
             }
+        }
+
+        if (!auth) {
+            setLoading(false);
+            return;
         }
 
         const unsubscribe = onAuthStateChanged(auth, (user) => {

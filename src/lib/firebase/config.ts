@@ -12,10 +12,12 @@ const firebaseConfig = {
     appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase (avoid duplicate initialization)
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+// Initialize Firebase (avoid duplicate initialization and build-time errors)
+const app = (getApps().length === 0 && typeof window !== 'undefined' && firebaseConfig.apiKey) 
+    ? initializeApp(firebaseConfig) 
+    : (getApps().length > 0 ? getApp() : null);
 
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const storage = getStorage(app);
+export const auth = app ? getAuth(app) : null as any;
+export const db = app ? getFirestore(app) : null as any;
+export const storage = app ? getStorage(app) : null as any;
 export default app;

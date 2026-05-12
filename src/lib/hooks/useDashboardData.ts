@@ -11,6 +11,10 @@ export function useActiveEngagements() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (!db) {
+            setLoading(false);
+            return;
+        }
         const q = query(
             collection(db, "engagements"),
             where("status", "==", "active"),
@@ -55,6 +59,10 @@ export function useStudioStats() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (!db) {
+            setLoading(false);
+            return;
+        }
         // Listening to a single 'dashboard_stats' document for performance
         const unsubscribe = onSnapshot(collection(db, "metadata"), (snapshot) => {
             const statsDoc = snapshot.docs.find(doc => doc.id === "studio_stats");
@@ -81,6 +89,10 @@ export function usePendingBriefs() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (!db) {
+            setLoading(false);
+            return;
+        }
         const q = query(
             collection(db, "briefs"),
             where("status", "==", "pending"),
