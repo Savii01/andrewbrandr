@@ -20,7 +20,7 @@ export default function NewEngagementModal({
         clientName: "",
         clientEmail: "",
         industry: "",
-        tier: "Growth" as EngagementTier,
+        tier: "Clarity" as EngagementTier,
         phase: "Strategy" as EngagementPhase,
         revenue: 2500,
         autoRenew: false,
@@ -147,8 +147,8 @@ export default function NewEngagementModal({
                             >
                                 <div className="space-y-1">
                                     <label className="text-[10px] uppercase font-bold text-[var(--text-muted)]">Engagement Tier</label>
-                                    <div className="grid grid-cols-3 gap-2">
-                                        {["Starter", "Growth", "Premium"].map((tier) => (
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {["Foundation", "Clarity", "Scale", "Enterprise"].map((tier) => (
                                             <button
                                                 key={tier}
                                                 onClick={() => setFormData({ ...formData, tier: tier as EngagementTier })}

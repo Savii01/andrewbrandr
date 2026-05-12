@@ -12,9 +12,9 @@ export default function FinancesPage() {
     const recentTransactions = engagements.slice(0, 5).map(eng => ({
         id: eng.id,
         client: eng.clientName,
-        amount: eng.tier === "Enterprise" ? "₦1,000,000+" :
-            eng.tier === "Scale" ? "₦850,000" :
-                eng.tier === "Clarity" ? "₦450,000" : "₦250,000",
+        amount: eng.tier === "Enterprise" ? "Custom scoped" :
+            eng.tier === "Scale" ? "₦900,000" :
+                eng.tier === "Clarity" ? "₦300,000" : "₦80,000",
         date: eng.startDate ? new Date(eng.startDate).toLocaleDateString() : new Date().toLocaleDateString(),
         status: (eng as any).paymentStatus || "paid",
         type: "incoming"

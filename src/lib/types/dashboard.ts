@@ -1,4 +1,4 @@
-export type EngagementTier = "Starter" | "Growth" | "Premium";
+export type EngagementTier = "Foundation" | "Clarity" | "Scale" | "Enterprise";
 export type EngagementPhase = "Strategy" | "Design" | "Systems" | "Execution";
 export type EngagementStatus = "active" | "paused" | "completed";
 
