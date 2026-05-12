@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useAuth } from "@/lib/auth-context";
+import { FiMail, FiLock, FiChevronRight } from "react-icons/fi";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
@@ -23,100 +24,110 @@ export default function LoginPage() {
             await signIn(email, password);
             router.push("/dashboard");
         } catch {
-            setError("Invalid email or password. Please try again.");
+            setError("Invalid credentials. Please verify your admin access.");
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center px-4">
+        <div className="min-h-screen bg-[#FDFDFD] flex items-center justify-center px-6 relative overflow-hidden">
+            {/* Background Texture */}
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none" 
+                 style={{ backgroundImage: 'radial-gradient(#0F0000 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+            
             <motion.div
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-                className="w-full max-w-md"
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="w-full max-w-[440px] relative z-10"
             >
-                {/* Logo */}
-                <div className="flex items-center gap-2 mb-10">
-                    <Image
-                        src="/images/ig-profile.png"
-                        alt="AndrewBrandr"
-                        width={40}
-                        height={40}
-                        className="rounded-full bg-black"
-                    />
-                    <h2 className="text-base tracking-tighter font-bold text-[var(--text-primary)]">
-                        AndrewBrandr
-                    </h2>
+                {/* Brand Identity */}
+                <div className="flex flex-col items-center text-center mb-12">
+                    <motion.div
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: 0.2 }}
+                        className="mb-8"
+                    >
+                        <Image
+                            src="/brand_assets/primary_logo_black.png"
+                            alt="AndrewBrandr"
+                            width={180}
+                            height={45}
+                            className="object-contain"
+                            priority
+                        />
+                    </motion.div>
+                    <h1 className="text-[32px] font-customFont font-bold text-[#0F0000] tracking-tighter mb-3">
+                        Studio Command
+                    </h1>
+                    <p className="text-[#0F0000]/50 text-[15px] font-medium max-w-[280px]">
+                        Sign in to manage active engagements and studio operations.
+                    </p>
                 </div>
 
-                <h1 className="font-serif text-[24px] md:text-[36px] lg:text-[40px] text-[var(--text-primary)] mb-2">
-                    Welcome back
-                </h1>
-                <p className="text-[var(--text-secondary)] mb-8 text-sm">
-                    Sign in to your Brand Studio
-                </p>
-
                 {error && (
-                    <div className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm">
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="mb-8 p-4 rounded-2xl bg-[#CC3300]/5 border border-[#CC3300]/10 text-[#CC3300] text-sm font-bold flex items-center justify-center text-center"
+                    >
                         {error}
-                    </div>
+                    </motion.div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-5">
-                    <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-[var(--text-primary)] mb-1.5">
-                            Email
-                        </label>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="relative group">
+                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#CC3300] transition-colors">
+                            <FiMail size={18} />
+                        </div>
                         <input
                             type="email"
-                            id="email"
                             required
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-lil-black text-[var(--text-primary)] focus:outline-none focus:border-orange transition-colors text-sm"
-                            placeholder="you@email.com"
+                            className="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-gray-100 bg-white text-[#0F0000] focus:outline-none focus:border-[#CC3300] transition-all text-sm font-bold placeholder:text-gray-300"
+                            placeholder="Email address"
                         />
                     </div>
 
-                    <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-[var(--text-primary)] mb-1.5">
-                            Password
-                        </label>
+                    <div className="relative group">
+                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#CC3300] transition-colors">
+                            <FiLock size={18} />
+                        </div>
                         <input
                             type="password"
-                            id="password"
                             required
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-lil-black text-[var(--text-primary)] focus:outline-none focus:border-orange transition-colors text-sm"
-                            placeholder="••••••••"
+                            className="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-gray-100 bg-white text-[#0F0000] focus:outline-none focus:border-[#CC3300] transition-all text-sm font-bold placeholder:text-gray-300"
+                            placeholder="Master password"
                         />
                     </div>
 
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full py-3 px-6 rounded-lg font-bold text-white bg-orange hover:bg-orange-light disabled:opacity-60 transition-all text-sm"
+                        className="w-full group mt-4 bg-[#0F0000] text-white py-4 px-6 rounded-2xl font-bold text-sm tracking-widest flex items-center justify-center gap-3 hover:bg-[#CC3300] transition-all shadow-xl shadow-[#0F0000]/10 disabled:opacity-50"
                     >
-                        {loading ? "Signing in..." : "Sign in"}
+                        {loading ? "AUTHENTICATING..." : "ENTER STUDIO"}
+                        <FiChevronRight className="group-hover:translate-x-1 transition-transform" />
                     </button>
                 </form>
 
-                <p className="mt-6 text-center text-sm text-[var(--text-secondary)]">
-                    Don&apos;t have an account?{" "}
-                    <Link href="/register" className="text-orange hover:text-orange-light transition-colors">
-                        Create one
+                <div className="mt-12 pt-8 border-t border-gray-100 flex flex-col items-center gap-6">
+                    <Link href="/" className="text-xs font-black text-gray-400 hover:text-[#CC3300] tracking-[0.2em] uppercase transition-colors">
+                        ← Exit to Website
                     </Link>
-                </p>
-
-                <p className="mt-4 text-center">
-                    <Link href="/" className="text-xs text-[var(--text-muted)] hover:text-orange transition-colors">
-                        ← Back to website
-                    </Link>
-                </p>
+                    
+                    <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Systems Online</span>
+                    </div>
+                </div>
             </motion.div>
         </div>
     );
 }
+

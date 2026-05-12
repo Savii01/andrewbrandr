@@ -37,14 +37,50 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        // 1. Check for persistent Admin session first
+        const adminSession = localStorage.getItem('admin_session');
+        if (adminSession) {
+            try {
+                const session = JSON.parse(adminSession);
+                setUser(session);
+                setLoading(false);
+                // We return early but still set up the listener in case they sign in with Firebase later
+            } catch (e) {
+                localStorage.removeItem('admin_session');
+            }
+        }
+
         const unsubscribe = onAuthStateChanged(auth, (user) => {
-            setUser(user);
-            setLoading(false);
+            // Only overwrite if we don't have an admin session
+            const hasAdmin = localStorage.getItem('admin_session');
+            if (user || !hasAdmin) {
+                setUser(user);
+                setLoading(false);
+            }
         });
         return unsubscribe;
     }, []);
 
     const signIn = async (email: string, password: string) => {
+        // 1. Try Admin Bypass first via API
+        try {
+            const res = await fetch('/api/auth/admin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password }),
+            });
+
+            if (res.ok) {
+                const adminUser = { email, uid: 'admin-master' };
+                setUser(adminUser as any);
+                localStorage.setItem('admin_session', JSON.stringify(adminUser));
+                return;
+            }
+        } catch (e) {
+            console.error("Admin check failed, falling back to Firebase", e);
+        }
+
+        // 2. Fallback to standard Firebase login
         await signInWithEmailAndPassword(auth, email, password);
     };
 
@@ -53,6 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const signOut = async () => {
+        localStorage.removeItem('admin_session');
         await firebaseSignOut(auth);
     };
 
