@@ -36,7 +36,7 @@ function OnboardingContent() {
     const plan = pricingPlans.find(p => p.slug === planSlug) || pricingPlans[0];
 
     const parsePrice = (p: string) => parseInt(p.replace(/[^0-9]/g, "")) || 0;
-    const totalAmount = parsePrice(plan.priceNGN) + (isRetainerSelected ? parsePrice(plan.retainer.priceNGN) : 0);
+    const totalAmount = parsePrice(plan.investment.priceNGN) + (isRetainerSelected ? parsePrice(plan.retainer.priceNGN) : 0);
 
     const currency: "ngn" | "usd" = leadData.currency || "ngn";
 
@@ -159,7 +159,7 @@ function OnboardingContent() {
                         <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
                             <div className="flex justify-between items-center mb-3 pb-3 border-b border-white/5">
                                 <span className="text-gray-400 text-md font-bold">Plan selection</span>
-                                <span className="text-white font-bold">{currency === "usd" ? plan.priceUSD : plan.priceNGN}</span>
+                                <span className="text-white font-bold">{currency === "usd" ? plan.investment.priceUSD : plan.investment.priceNGN}</span>
                             </div>
                             {isRetainerSelected && (
                                 <div className="flex justify-between items-center mb-3 pb-3 border-b border-white/5 animate-in fade-in slide-in-from-top-2 duration-500">
@@ -170,7 +170,7 @@ function OnboardingContent() {
                             <div className="flex justify-between items-center">
                                 <span className="text-white/60 text-md font-bold">Total amount</span>
                                 <span className="text-white font-bold text-lg">
-                                    {currency === "usd" ? plan.priceUSD : `₦${totalAmount.toLocaleString()}`}
+                                    {currency === "usd" ? plan.investment.priceUSD : `₦${totalAmount.toLocaleString()}`}
                                 </span>
                             </div>
                         </div>
@@ -225,7 +225,7 @@ function OnboardingContent() {
                                     <OrderSummary
                                         className="!bg-transparent !p-0"
                                         packageName={plan.subtitle}
-                                        packagePrice={currency === "usd" ? plan.priceUSD : plan.priceNGN}
+                                        packagePrice={currency === "usd" ? plan.investment.priceUSD : plan.investment.priceNGN}
                                         retainerName={plan.retainer.title}
                                         retainerPrice={currency === "usd" ? plan.retainer.priceUSD : plan.retainer.priceNGN}
                                         isRetainerSelected={isRetainerSelected}

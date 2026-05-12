@@ -96,7 +96,7 @@ const PaymentStep: React.FC<PaymentStepProps> = ({
                 <div className="bg-gray-50 border border-gray-100 rounded-2xl p-5 space-y-3">
                     <div className="flex justify-between text-sm font-medium text-gray-500">
                         <span>{plan.title}</span>
-                        <span className="text-black font-bold">{plan.priceNGN}</span>
+                        <span className="text-black font-bold">{plan.investment.priceNGN}</span>
                     </div>
                     {isRetainerSelected && (
                         <div className="flex justify-between text-sm font-medium text-gray-500">
@@ -166,7 +166,7 @@ const PaymentStep: React.FC<PaymentStepProps> = ({
             <div className="bg-gray-50 border border-gray-100 rounded-2xl p-5 space-y-3">
                 <div className="flex justify-between text-sm font-medium text-gray-500">
                     <span>{plan.title}</span>
-                    <span className="text-black font-bold">{plan.priceUSD}</span>
+                    <span className="text-black font-bold">{plan.investment.priceUSD}</span>
                 </div>
                 {isRetainerSelected && (
                     <div className="flex justify-between text-sm font-medium text-gray-500">
@@ -176,7 +176,7 @@ const PaymentStep: React.FC<PaymentStepProps> = ({
                 )}
                 <div className="border-t border-gray-200 pt-3 flex justify-between font-bold">
                     <span className="text-black">Total due today</span>
-                    <span className="text-orange text-lg">{plan.priceUSD}</span>
+                    <span className="text-orange text-lg">{plan.investment.priceUSD}</span>
                 </div>
             </div>
 

@@ -19,6 +19,11 @@ export interface PricingPlan {
         priceUSD: string;
         details: string;
     };
+    retainer: {
+        title: string;
+        priceNGN: string;
+        priceUSD: string;
+    };
     whatYouWalkAwayWith: string[];
     discoveryIntro: string;
     ctaText: string;
@@ -68,6 +73,11 @@ export const pricingPlans: PricingPlan[] = [
             priceNGN: "₦80,000",
             priceUSD: "$100",
             details: "50% deposit to begin. Remaining 50% before final delivery. Payment is made only after proposal alignment."
+        },
+        retainer: {
+            title: "Foundation Support",
+            priceNGN: "₦150,000",
+            priceUSD: "$200"
         },
         whatYouWalkAwayWith: [
             "A complete, professional brand identity ready to show up consistently across Instagram, WhatsApp, and print.",
@@ -126,6 +136,11 @@ export const pricingPlans: PricingPlan[] = [
             priceNGN: "₦300,000",
             priceUSD: "$400",
             details: "50% deposit to begin. Remaining 50% before final delivery."
+        },
+        retainer: {
+            title: "Growth Strategy Retainer",
+            priceNGN: "₦150,000",
+            priceUSD: "$200"
         },
         whatYouWalkAwayWith: [
             "A brand that looks and feels consistent everywhere.",
@@ -187,6 +202,11 @@ export const pricingPlans: PricingPlan[] = [
             priceUSD: "$1,200",
             details: "50% deposit to begin. Remaining 50% before final delivery."
         },
+        retainer: {
+            title: "Scale & Systems Retainer",
+            priceNGN: "₦250,000",
+            priceUSD: "$350"
+        },
         whatYouWalkAwayWith: [
             "A brand built for the next stage of growth.",
             "Consistent.",
@@ -228,6 +248,11 @@ export const pricingPlans: PricingPlan[] = [
             priceNGN: "Custom scoped",
             priceUSD: "Custom scoped",
             details: "Custom scoped based on requirements. Deposit structure confirmed during proposal."
+        },
+        retainer: {
+            title: "Enterprise Governance",
+            priceNGN: "Custom scoped",
+            priceUSD: "Custom scoped"
         },
         whatYouWalkAwayWith: [
             "A complete brand operating system.",
