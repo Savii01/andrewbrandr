@@ -10,6 +10,10 @@ export default function AvailabilityBadge() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (!db) {
+            setLoading(false);
+            return;
+        }
         const docRef = doc(db, "settings", "availability");
         const unsub = onSnapshot(docRef, (docSnap) => {
             if (docSnap.exists()) {
