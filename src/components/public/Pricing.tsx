@@ -17,8 +17,8 @@ const stages = [
     slug: "foundation",
     stage: "Stage 01",
     title: "Starting Out",
-    subtitle: "You have a product. But the foundation isn’t clear yet.",
-    price: "₦80,000",
+    priceNGN: "₦80,000",
+    priceUSD: "$100",
     package: "Strategy Lite • Identity Core",
     description: "A clear, professional identity built to enter the market properly.",
     cta: "View Stage 01",
@@ -31,7 +31,8 @@ const stages = [
     title: "Running, but stuck",
     subtitle: "The business works. But the brand feels disconnected.",
     extra: "It looks different everywhere. Trust isn’t where it should be.",
-    price: "₦300,000",
+    priceNGN: "₦300,000",
+    priceUSD: "$400",
     package: "Strategy • Identity • Systems",
     description: "Clarity, consistency, and a stronger foundation for growth.",
     cta: "View Stage 02",
@@ -44,7 +45,8 @@ const stages = [
     title: "Growing & Scaling",
     subtitle: "The business has evolved. The brand hasn’t kept up.",
     extra: "New markets. Higher expectations. The system needs to scale.",
-    price: "₦900,000",
+    priceNGN: "₦900,000",
+    priceUSD: "$1,200",
     package: "Strategy • Identity • Web System",
     description: "A scalable brand system built for the next level.",
     cta: "View Stage 03",
@@ -57,7 +59,8 @@ const stages = [
     title: "Enterprise",
     subtitle: "Rebuilding at scale.",
     extra: "Governance. Systems. Multi-platform execution.",
-    price: "Custom scoped",
+    priceNGN: "Custom scoped",
+    priceUSD: "Custom scoped",
     package: "Full Strategy • Identity • Systems • Expression",
     description: "A complete brand operating system built for any team, at any scale.",
     cta: "View Enterprise",
@@ -67,12 +70,19 @@ const stages = [
 
 const Pricing = () => {
   const [mounted, setMounted] = useState(false);
+  const [isNigeria, setIsNigeria] = useState(false);
   const prevRef = useRef<HTMLButtonElement>(null);
   const nextRef = useRef<HTMLButtonElement>(null);
   const swiperRef = useRef<any>(null);
 
   useEffect(() => {
     setMounted(true);
+    try {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (tz === "Africa/Lagos") setIsNigeria(true);
+    } catch (e) {
+      console.error(e);
+    }
   }, []);
 
   useEffect(() => {
@@ -146,7 +156,7 @@ const Pricing = () => {
                         {item.stage}
                       </span>
                       <span className="text-[18px] md:text-[20px] font-extrabold text-[#0F0000]">
-                        {item.price}
+                        {mounted && isNigeria ? item.priceNGN : item.priceUSD}
                       </span>
                     </div>
 
