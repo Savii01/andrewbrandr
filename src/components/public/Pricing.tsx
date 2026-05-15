@@ -100,15 +100,41 @@ const Pricing = () => {
       <div className="mx-4 flex flex-col justify-center items-center">
         
         {/* ── Header ── */}
-        <div className="max-w-[720px] text-left w-full mb-14">
-          <span className="bg-[#CC3300] text-white px-8 py-2.5 mb-5 rounded-full text-[14px] font-bold inline-block">
-            Find your stage
-          </span>
-          <h2 className="text-[#0F0000] text-[24px] sm:text-[28px] md:text-[30px] font-bold tracking-tight leading-[1.15] mb-6">
-            Growth happens in phases.
-            <br />
-            Your brand should reflect the one you&apos;re in.
-          </h2>
+        <div className="max-w-[720px] text-left w-full mb-14 flex flex-col md:flex-row md:items-end md:justify-between gap-8">
+          <div>
+            <span className="bg-[#CC3300] text-white px-8 py-2.5 mb-5 rounded-full text-[14px] font-bold inline-block">
+              Find your stage
+            </span>
+            <h2 className="text-[#0F0000] text-[24px] sm:text-[28px] md:text-[30px] font-bold tracking-tight leading-[1.15]">
+              Growth happens in phases.
+              <br />
+              Your brand should reflect the one you&apos;re in.
+            </h2>
+          </div>
+
+          {/* Currency Toggle */}
+          <div className="flex items-center bg-[#0f0000]/5 p-1 rounded-full border border-[#0f0000]/10 shrink-0">
+            <button
+              onClick={() => setIsNigeria(true)}
+              className={`px-6 py-2 rounded-full text-xs font-bold transition-all ${
+                isNigeria 
+                ? "bg-[#0f0000] text-white shadow-lg" 
+                : "text-[#0f0000]/40 hover:text-[#0f0000]"
+              }`}
+            >
+              NGN
+            </button>
+            <button
+              onClick={() => setIsNigeria(false)}
+              className={`px-6 py-2 rounded-full text-xs font-bold transition-all ${
+                !isNigeria 
+                ? "bg-[#0f0000] text-white shadow-lg" 
+                : "text-[#0f0000]/40 hover:text-[#0f0000]"
+              }`}
+            >
+              USD
+            </button>
+          </div>
         </div>
 
         {/* ── Original Swiper Carousel ── */}

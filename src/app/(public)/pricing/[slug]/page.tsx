@@ -64,9 +64,36 @@ export default function PricingDetailPage() {
             >
               {/* Stage Header */}
               <div className="mb-20">
-                <span className="text-[#CC3300] font-bold text-xl mb-4 block">
-                  {plan.stage} — {plan.subtitle}
-                </span>
+                <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-4">
+                  <span className="text-[#CC3300] font-bold text-xl block">
+                    {plan.stage} — {plan.subtitle}
+                  </span>
+
+                  {/* Currency Toggle */}
+                  <div className="flex items-center bg-[#0f0000]/5 p-1 rounded-full border border-[#0f0000]/10 shrink-0">
+                    <button
+                      onClick={() => setIsNigeria(true)}
+                      className={`px-4 py-1.5 rounded-full text-[10px] font-bold transition-all ${
+                        isNigeria 
+                        ? "bg-[#0f0000] text-white shadow-lg" 
+                        : "text-[#0f0000]/40 hover:text-[#0f0000]"
+                      }`}
+                    >
+                      NGN
+                    </button>
+                    <button
+                      onClick={() => setIsNigeria(false)}
+                      className={`px-4 py-1.5 rounded-full text-[10px] font-bold transition-all ${
+                        !isNigeria 
+                        ? "bg-[#0f0000] text-white shadow-lg" 
+                        : "text-[#0f0000]/40 hover:text-[#0f0000]"
+                      }`}
+                    >
+                      USD
+                    </button>
+                  </div>
+                </div>
+
                 <h1 className="text-[42px] md:text-[40px] font-extrabold text-[#0F0000] mb-8 tracking-tight">
                   {plan.stage} — {plan.title}
                 </h1>
