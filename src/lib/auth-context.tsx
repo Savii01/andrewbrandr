@@ -68,7 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const signIn = async (email: string, password: string) => {
         // 1. Try Admin Bypass first via API
         try {
-            const res = await fetch('/api/auth/admin', {
+            const res = await fetch('/api/admin-auth', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),

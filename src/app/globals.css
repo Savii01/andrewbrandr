@@ -20,9 +20,9 @@
   --color-orange-light: #FF6B3D;
   --color-green: #33CC33;
   --color-green-light: rgba(51, 204, 51, 0.35);
-  --color-black: #000000;
+  --color-black: #0F0000;
   --color-lil-black: #0F0000;
-  --color-lilBlack: #0E0E0E;
+  --color-lilBlack: #0F0000;
   /* Adding camelCase for compatibility */
   --color-white: #FFFFFF;
   --color-gray-50: #FAFAFA;
@@ -170,33 +170,34 @@ html {
 
 body {
   font-family: var(--font-sans);
+  font-weight: 700;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ─── Light Mode (default) ─── */
-:root {
-  --background: #ffffff;
-  --foreground: #0D0D0D;
-  --surface: #F5F5F5;
-  --surface-elevated: #FFFFFF;
-  --border-color: #E5E5E5;
-  --text-primary: #0D0D0D;
-  --text-secondary: #525252;
-  --text-muted: #737373;
+.font-black {
+  font-weight: 900 !important;
 }
 
-/* ─── Dark Mode ─── */
-.dark {
-  --background: #0D0D0D;
-  --foreground: #FFFFFF;
-  --surface: #121212;
-  --surface-elevated: #1A1A1A;
-  --border-color: #2A2A2A;
-  --text-primary: #FFFFFF;
-  --text-secondary: #A3A3A3;
-  --text-muted: #737373;
+/* ─── Unified Design System (Brand Light Theme) ─── */
+:root {
+  --background: #FDF3E6; /* Brand Cream */
+  --foreground: #0F0000;
+  --surface: #FFFFFF; /* Crisp white for cards */
+  --surface-elevated: #FDF3E6;
+  --border-color: rgba(15, 0, 0, 0.1); /* Subtle dark borders */
+  --text-primary: #0F0000; /* Lil-black */
+  --text-secondary: rgba(15, 0, 0, 0.6);
+  --text-muted: rgba(15, 0, 0, 0.4);
+  
+  /* Brand Colors */
+  --color-black: #0F0000;
+  --color-lil-black: #0F0000;
+  --color-orange: #CC3300;
+  --color-orange-light: #FF6B3D;
+  --color-cream: #FDF3E6;
 }
+
 
 /* ─── Utility Classes ─── */
 .font-display {

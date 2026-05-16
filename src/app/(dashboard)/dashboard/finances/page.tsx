@@ -31,7 +31,7 @@ export default function FinancesPage() {
                         Track incoming payments, retainers, and studio revenue.
                     </p>
                 </div>
-                <button className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-black border border-gray-200 dark:border-gray-800 text-[var(--text-primary)] text-xs font-bold uppercase tracking-widest rounded-xl hover:border-orange hover:text-orange transition-all">
+                <button className="flex items-center gap-2 px-6 py-3 bg-[var(--surface)] border border-[var(--border-color)] text-[var(--text-primary)] text-sm font-bold rounded-xl hover:border-orange hover:text-orange transition-all">
                     <FiDownload size={16} />
                     Export CSV
                 </button>
@@ -42,16 +42,16 @@ export default function FinancesPage() {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="p-6 rounded-3xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-black"
+                    className="p-6 rounded-3xl border border-[var(--border-color)] bg-[var(--surface)]"
                 >
                     <div className="flex items-center gap-3 mb-4 text-[var(--text-secondary)]">
-                        <div className="p-2 bg-gray-50 dark:bg-lil-black rounded-lg">
+                        <div className="p-2 bg-[var(--surface-elevated)] rounded-lg">
                             <FiDollarSign size={18} />
                         </div>
-                        <span className="text-xs font-bold uppercase tracking-widest">Total MRR</span>
+                        <span className="text-sm font-bold">Total MRR</span>
                     </div>
                     {statsLoading ? (
-                        <div className="h-10 bg-gray-100 dark:bg-gray-800 rounded animate-pulse w-1/2" />
+                        <div className="h-10 bg-[var(--surface-elevated)] rounded animate-pulse w-1/2" />
                     ) : (
                         <div>
                             <p className="text-3xl font-display font-bold text-[var(--text-primary)] mb-2">
@@ -68,16 +68,16 @@ export default function FinancesPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="p-6 rounded-3xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-black"
+                    className="p-6 rounded-3xl border border-[var(--border-color)] bg-[var(--surface)]"
                 >
                     <div className="flex items-center gap-3 mb-4 text-[var(--text-secondary)]">
-                        <div className="p-2 bg-gray-50 dark:bg-lil-black rounded-lg">
+                        <div className="p-2 bg-[var(--surface-elevated)] rounded-lg">
                             <FiClock size={18} />
                         </div>
-                        <span className="text-xs font-bold uppercase tracking-widest">Pending Payments</span>
+                        <span className="text-sm font-bold">Pending Payments</span>
                     </div>
                     {statsLoading ? (
-                        <div className="h-10 bg-gray-100 dark:bg-gray-800 rounded animate-pulse w-1/2" />
+                        <div className="h-10 bg-[var(--surface-elevated)] rounded animate-pulse w-1/2" />
                     ) : (
                         <div>
                             <p className="text-3xl font-display font-bold text-[var(--text-primary)] mb-2">
@@ -100,7 +100,7 @@ export default function FinancesPage() {
                         <div className="p-2 bg-white/20 rounded-lg">
                             <FiDollarSign size={18} />
                         </div>
-                        <span className="text-xs font-bold uppercase tracking-widest">Projected Run Rate</span>
+                        <span className="text-sm font-bold">Projected Run Rate</span>
                     </div>
                     {statsLoading ? (
                         <div className="h-10 bg-white/20 rounded animate-pulse w-1/2" />
@@ -122,11 +122,11 @@ export default function FinancesPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="rounded-3xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-black overflow-hidden"
+                className="rounded-3xl border border-[var(--border-color)] bg-[var(--surface)] overflow-hidden"
             >
-                <div className="p-6 lg:p-8 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
+                <div className="p-6 lg:p-8 border-b border-[var(--border-color)] flex justify-between items-center">
                     <h2 className="text-xl font-display text-[var(--text-primary)]">Recent Transactions</h2>
-                    <button className="text-[10px] uppercase font-bold tracking-widest text-orange hover:text-orange-light transition-colors">
+                    <button className="text-sm font-bold text-orange hover:text-orange-light transition-colors">
                         View All
                     </button>
                 </div>
@@ -134,29 +134,29 @@ export default function FinancesPage() {
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-gray-50 dark:bg-lil-black/50 border-b border-gray-100 dark:border-gray-800">
-                                <th className="px-6 lg:px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-[var(--text-muted)]">Client / Project</th>
-                                <th className="px-6 lg:px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-[var(--text-muted)]">Date</th>
-                                <th className="px-6 lg:px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-[var(--text-muted)]">Amount</th>
-                                <th className="px-6 lg:px-8 py-4 text-[10px] uppercase tracking-widest font-bold text-[var(--text-muted)]">Status</th>
+                            <tr className="bg-[var(--surface-elevated)]/50 border-b border-[var(--border-color)]">
+                                <th className="px-6 lg:px-8 py-4 text-xs font-bold text-[var(--text-muted)]">Client / Project</th>
+                                <th className="px-6 lg:px-8 py-4 text-xs font-bold text-[var(--text-muted)]">Date</th>
+                                <th className="px-6 lg:px-8 py-4 text-xs font-bold text-[var(--text-muted)]">Amount</th>
+                                <th className="px-6 lg:px-8 py-4 text-xs font-bold text-[var(--text-muted)]">Status</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-50 dark:divide-gray-800/50">
+                        <tbody className="divide-y divide-[var(--border-color)]/50">
                             {engagementsLoading ? (
                                 [...Array(5)].map((_, i) => (
                                     <tr key={i}>
-                                        <td className="px-6 lg:px-8 py-4"><div className="h-4 bg-gray-100 dark:bg-gray-800 rounded animate-pulse w-3/4" /></td>
-                                        <td className="px-6 lg:px-8 py-4"><div className="h-4 bg-gray-100 dark:bg-gray-800 rounded animate-pulse w-1/2" /></td>
-                                        <td className="px-6 lg:px-8 py-4"><div className="h-4 bg-gray-100 dark:bg-gray-800 rounded animate-pulse w-1/2" /></td>
-                                        <td className="px-6 lg:px-8 py-4"><div className="h-4 bg-gray-100 dark:bg-gray-800 rounded animate-pulse w-1/3" /></td>
+                                        <td className="px-6 lg:px-8 py-4"><div className="h-4 bg-[var(--surface-elevated)] rounded animate-pulse w-3/4" /></td>
+                                        <td className="px-6 lg:px-8 py-4"><div className="h-4 bg-[var(--surface-elevated)] rounded animate-pulse w-1/2" /></td>
+                                        <td className="px-6 lg:px-8 py-4"><div className="h-4 bg-[var(--surface-elevated)] rounded animate-pulse w-1/2" /></td>
+                                        <td className="px-6 lg:px-8 py-4"><div className="h-4 bg-[var(--surface-elevated)] rounded animate-pulse w-1/3" /></td>
                                     </tr>
                                 ))
                             ) : recentTransactions.length > 0 ? (
                                 recentTransactions.map((tx) => (
-                                    <tr key={tx.id} className="hover:bg-gray-50 dark:hover:bg-lil-black/50 transition-colors">
+                                    <tr key={tx.id} className="hover:bg-[var(--surface-elevated)]/50 transition-colors">
                                         <td className="px-6 lg:px-8 py-4">
                                             <div className="font-bold text-[var(--text-primary)] text-sm mb-1">{tx.client}</div>
-                                            <div className="text-[10px] uppercase tracking-widest font-bold text-[var(--text-muted)]">Project Initiated</div>
+                                            <div className="text-xs font-bold text-[var(--text-muted)]">Project Initiated</div>
                                         </td>
                                         <td className="px-6 lg:px-8 py-4 text-sm text-[var(--text-secondary)] font-medium">
                                             {tx.date}
@@ -165,7 +165,7 @@ export default function FinancesPage() {
                                             {tx.amount}
                                         </td>
                                         <td className="px-6 lg:px-8 py-4">
-                                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${tx.status === 'paid' ? 'bg-green/10 text-green-500' : 'bg-orange/10 text-orange'
+                                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${tx.status === 'paid' ? 'bg-green/10 text-green-500' : 'bg-orange/10 text-orange'
                                                 }`}>
                                                 {tx.status === 'paid' ? <FiCheckCircle size={12} /> : <FiClock size={12} />}
                                                 {tx.status}

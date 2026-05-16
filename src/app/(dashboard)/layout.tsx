@@ -15,11 +15,11 @@ export default function DashboardLayout({
         <AuthProvider>
             <ThemeProvider>
                 <ProtectedRoute>
-                    <div id="dashboard-root" className="min-h-screen bg-white dark:bg-black">
+                    <div id="dashboard-root" className="min-h-screen bg-[var(--background)] text-[var(--text-primary)]">
                         <DashboardSidebar />
                         <div className="lg:pl-[var(--sidebar-width)] transition-all duration-300">
                             <DashboardHeader />
-                            <main className="min-h-screen p-6 md:p-8 lg:p-10 pt-[calc(var(--header-height)+24px)] lg:pt-[calc(var(--header-height)+24px)]">
+                            <main className="min-h-screen p-6 md:p-8 lg:p-10 pt-24 lg:pt-32">
                                 {children}
                             </main>
                         </div>

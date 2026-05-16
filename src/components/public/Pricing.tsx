@@ -96,7 +96,7 @@ const Pricing = () => {
   }, [mounted]);
 
   return (
-    <div id="pricing" className="bg-[#FDF3E6] py-20 overflow-hidden">
+    <div id="stages" className="bg-[#FDF3E6] py-20 overflow-hidden">
       <div className="mx-4 flex flex-col justify-center items-center">
         
         {/* ── Header ── */}

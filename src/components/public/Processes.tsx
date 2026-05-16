@@ -41,7 +41,7 @@ export default function Processes() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   return (
-    <section className="bg-[#0F0000] text-[#fdf3e6] pt-24 pb-48 px-4 relative relative">
+    <section id="process" className="bg-[#0F0000] text-[#fdf3e6] pt-24 pb-48 px-4 relative">
       <div className="max-w-[720px] mx-auto w-full">
 
         {/* ── Header ── */}

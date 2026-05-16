@@ -3,7 +3,6 @@
 import { use, Suspense } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { projects } from '@/data/projects';
 import CTAWithTestimonials from '@/components/public/CTAWithTestimonials';
 import { notFound } from 'next/navigation';
 import Button from '@/components/public/Button';
@@ -17,16 +16,25 @@ const fadeInUp = {
     transition: { duration: 0.8 }
 };
 
-function ProjectDetailContent({ id }: { id: string }) {
-    const projectId = parseInt(id);
-    const projectIndex = projects.findIndex((proj) => proj.id === projectId);
+import { useProject } from '@/lib/hooks/useProject';
 
-    if (projectIndex === -1) {
-        notFound();
+function ProjectDetailContent({ id }: { id: string }) {
+    const { project, loading, error } = useProject(id);
+
+    if (loading) {
+        return (
+            <div className="bg-white dark:bg-black min-h-screen pt-20 flex items-center justify-center">
+                <div className="animate-pulse flex flex-col items-center">
+                    <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full mb-4" />
+                    <p className="text-[10px] uppercase tracking-widest font-bold text-gray-400">Decoding Room...</p>
+                </div>
+            </div>
+        );
     }
 
-    const project = projects[projectIndex];
-    const nextProject = projects[(projectIndex + 1) % projects.length];
+    if (error || !project) {
+        notFound();
+    }
 
     return (
         <div className="bg-white dark:bg-black min-h-screen pt-20 overflow-hidden">
@@ -151,33 +159,11 @@ function ProjectDetailContent({ id }: { id: string }) {
                     </motion.div>
                 )}
 
-                {/* Next Project Navigation */}
-                <div className="border-t dark:border-gray-800 pt-20">
-                    <motion.div {...fadeInUp} className="text-center mb-16">
-                        <h2 className="text-5xl font-display text-black dark:text-white mb-4">Next Project</h2>
-                        <p className="text-gray-600 dark:text-gray-400">Check out our next project below.</p>
-                    </motion.div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                        {/* Next Project Card */}
-                        <motion.div {...fadeInUp}>
-                            <Link
-                                href={`/projects/${nextProject.id}`}
-                                className="group block bg-gray-50 dark:bg-lilBlack border border-gray-400 dark:border-gray-800 rounded-3xl overflow-hidden transition-all hover:shadow-xl"
-                            >
-                                <div className="relative h-[300px] overflow-hidden">
-                                    <img
-                                        src={nextProject.image}
-                                        alt={nextProject.name}
-                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                    />
-                                </div>
-                                <div className="p-8">
-                                    <h3 className="text-2xl font-bold text-black dark:text-white mb-2">{nextProject.name}</h3>
-                                    <div className="text-orange font-bold">View Project →</div>
-                                </div>
-                            </Link>
-                        </motion.div>
+                    <div className="text-center mt-20">
+                        <Link href="/work" className="px-8 py-4 bg-orange text-white text-sm font-bold uppercase tracking-[0.2em] rounded-full hover:bg-black transition-all shadow-xl shadow-orange/20">
+                            Back to Portfolio
+                        </Link>
+                    </div>
 
                         {/* Custom CTA Card */}
                         <motion.div {...fadeInUp}>

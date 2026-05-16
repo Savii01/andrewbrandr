@@ -12,10 +12,15 @@ const firebaseConfig = {
     appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase (avoid duplicate initialization and build-time errors)
-const app = (getApps().length === 0 && typeof window !== 'undefined' && firebaseConfig.apiKey) 
-    ? initializeApp(firebaseConfig) 
-    : (getApps().length > 0 ? getApp() : null);
+// Singleton pattern for Firebase initialization
+function getFirebaseApp() {
+    if (typeof window === 'undefined') return null;
+    if (getApps().length > 0) return getApp();
+    if (!firebaseConfig.apiKey) return null;
+    return initializeApp(firebaseConfig);
+}
+
+const app = getFirebaseApp();
 
 export const auth = app ? getAuth(app) : null as any;
 export const db = app ? getFirestore(app) : null as any;

@@ -15,7 +15,7 @@ const iconMap: Record<string, any> = {
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-200 text-black dark:bg-lilBlack dark:text-white py-10">
+    <footer className="bg-[#0F0000] text-[#fdf3e6] py-10">
       <div className="container mx-auto px-6 md:px-12 lg:px-20">
         <div className="flex flex-col md:flex-row justify-between items-start">
 
@@ -23,35 +23,32 @@ const Footer = () => {
           <div className="flex flex-col gap-y-4 justify-start items-start order-2 md:order-1 mt-10 md:mt-0">
 
           <div className="flex flex-wrap lg:justify-center gap-4 mt-6 md:mt-0">
-            <a href="/about" className="text-black dark:text-gray-300 hover:text-orange dark:hover:text-orange font-semibold transition">About</a>
-            <a href="/services" className="text-black dark:text-gray-300 hover:text-orange dark:hover:text-orange font-semibold transition">Services</a>
-            <a href="/projects" className="text-black dark:text-gray-300 hover:text-orange dark:hover:text-orange font-semibold transition">Projects</a>
-            <a href="/send-message" className="text-black dark:text-gray-300 hover:text-orange dark:hover:text-orange font-semibold transition">Contact</a>
+            <a href="/about" className="text-white/70 hover:text-orange font-semibold transition">About</a>
+            <a href="/#process" className="text-white/70 hover:text-orange font-semibold transition">Process</a>
+            <a href="/projects" className="text-white/70 hover:text-orange font-semibold transition">Projects</a>
+            <a href="/send-message" className="text-white/70 hover:text-orange font-semibold transition">Contact</a>
           </div>
           <div className="flex flex-wrap lg:justify-center gap-6 mt-2 md:mt-0">
-            <a href="/terms" className="text-black dark:text-gray-300 hover:text-orange dark:hover:text-orange transition">Terms</a>
-            <a href="/policy" className="text-black dark:text-gray-300 hover:text-orange dark:hover:text-orange transition">Policy</a>
-            <a href="/refund" className="text-black dark:text-gray-300 hover:text-orange dark:hover:text-orange transition">Refund</a>
-            <a href="/pricing" className="text-black dark:text-gray-300 hover:text-orange dark:hover:text-orange transition">Pricing</a>
+            <a href="/terms" className="text-white/70 hover:text-orange transition">Terms</a>
+            <a href="/policy" className="text-white/70 hover:text-orange transition">Policy</a>
+            <a href="/refund" className="text-white/70 hover:text-orange transition">Refund</a>
+            <a href="/#stages" className="text-white/70 hover:text-orange transition">Stages</a>
           </div>
           </div>
 
           <div className="flex flex-col order-1 md:order-2">
             {/* Logo / Branding */}
             <div className="flex items-center gap-2">
-                <div className="relative w-16 h-16 rounded-full overflow-hidden bg-black shrink-0">
+                <div className="relative w-40 h-10 shrink-0">
                     <Image
-                        src="/images/ig-profile.png"
-                        alt="Logo"
+                        src="/brand_assets/secondary_logo_white_svg.svg"
+                        alt="AndrewBrandr"
                         fill
-                        className="object-cover"
+                        className="object-contain"
                     />
                 </div>
-                <h2 className="text-[16px] tracking-tighter font-bold md:text-[30px] dark:text-white text-black">
-                   AndrewBrandr
-                </h2>
             </div>
-            <p className="text-gray-600 dark:text-gray-400 mt-2 text-[16px] md:text-[16px] text-left">
+            <p className="text-white/60 mt-2 text-[16px] md:text-[16px] text-left">
                 I design systems that connect clarity<br/>  with Creativity.
             </p>
           </div>      
@@ -66,7 +63,7 @@ const Footer = () => {
                         href={link.url} 
                         target="_blank"
                         rel="noreferrer"
-                        className="text-gray-800 dark:text-gray-400 dark:hover:text-orange hover:text-orange transition text-xl"
+                        className="text-white/60 hover:text-orange transition text-xl"
                     >
                         <Icon />
                     </a>

@@ -64,7 +64,7 @@ const Navbar = () => {
 
                     {/* Desktop CTA */}
                     <Button
-                        href="/work-with-me"
+                        href="/#stages"
                         label="Start a Project"
                         icon={MdArrowOutward}
                         variant="secondary"
@@ -129,7 +129,7 @@ const Navbar = () => {
                     ))}
                     <li className="pt-6 border-t border-white/10">
                         <Button
-                            href="/work-with-me"
+                            href="/#stages"
                             label="Start a Project"
                             icon={MdArrowOutward}
                             variant="secondary"

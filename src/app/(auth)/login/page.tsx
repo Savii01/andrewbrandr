@@ -6,13 +6,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useAuth } from "@/lib/auth-context";
-import { FiMail, FiLock, FiChevronRight } from "react-icons/fi";
+import { FiMail, FiLock, FiChevronRight, FiEye, FiEyeOff } from "react-icons/fi";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const { signIn } = useAuth();
     const router = useRouter();
 
@@ -59,10 +60,10 @@ export default function LoginPage() {
                             priority
                         />
                     </motion.div>
-                    <h1 className="text-[32px] font-customFont font-bold text-[#0F0000] tracking-tighter mb-3">
+                    <h1 className="text-[32px] font-customFont font-black text-[#0F0000] mb-3">
                         Studio Command
                     </h1>
-                    <p className="text-[#0F0000]/50 text-[15px] font-medium max-w-[280px]">
+                    <p className="text-[#0F0000]/50 text-base font-medium max-w-[280px]">
                         Sign in to manage active engagements and studio operations.
                     </p>
                 </div>
@@ -71,7 +72,7 @@ export default function LoginPage() {
                     <motion.div 
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="mb-8 p-4 rounded-2xl bg-[#CC3300]/5 border border-[#CC3300]/10 text-[#CC3300] text-sm font-bold flex items-center justify-center text-center"
+                        className="mb-8 p-4 rounded-2xl bg-[#CC3300]/5 border border-[#CC3300]/10 text-[#CC3300] text-base font-bold flex items-center justify-center text-center"
                     >
                         {error}
                     </motion.div>
@@ -87,7 +88,7 @@ export default function LoginPage() {
                             required
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-gray-100 bg-white text-[#0F0000] focus:outline-none focus:border-[#CC3300] transition-all text-sm font-bold placeholder:text-gray-300"
+                            className="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-gray-100 bg-white text-[#0F0000] focus:outline-none focus:border-[#CC3300] transition-all text-base font-bold placeholder:text-gray-300"
                             placeholder="Email address"
                         />
                     </div>
@@ -97,19 +98,26 @@ export default function LoginPage() {
                             <FiLock size={18} />
                         </div>
                         <input
-                            type="password"
+                            type={showPassword ? "text" : "password"}
                             required
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-gray-100 bg-white text-[#0F0000] focus:outline-none focus:border-[#CC3300] transition-all text-sm font-bold placeholder:text-gray-300"
+                            className="w-full pl-12 pr-12 py-4 rounded-2xl border-2 border-gray-100 bg-white text-[#0F0000] focus:outline-none focus:border-[#CC3300] transition-all text-base font-bold placeholder:text-gray-300"
                             placeholder="Master password"
                         />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#CC3300] transition-colors"
+                        >
+                            {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+                        </button>
                     </div>
 
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full group mt-4 bg-[#0F0000] text-white py-4 px-6 rounded-2xl font-bold text-sm tracking-widest flex items-center justify-center gap-3 hover:bg-[#CC3300] transition-all shadow-xl shadow-[#0F0000]/10 disabled:opacity-50"
+                        className="w-full group mt-4 bg-[#0F0000] text-white py-4 px-6 rounded-2xl font-black text-base flex items-center justify-center gap-3 hover:bg-[#CC3300] transition-all shadow-xl shadow-[#0F0000]/10 disabled:opacity-50"
                     >
                         {loading ? "AUTHENTICATING..." : "ENTER STUDIO"}
                         <FiChevronRight className="group-hover:translate-x-1 transition-transform" />
@@ -117,13 +125,13 @@ export default function LoginPage() {
                 </form>
 
                 <div className="mt-12 pt-8 border-t border-gray-100 flex flex-col items-center gap-6">
-                    <Link href="/" className="text-xs font-black text-gray-400 hover:text-[#CC3300] tracking-[0.2em] uppercase transition-colors">
+                    <Link href="/" className="text-sm font-black text-gray-400 hover:text-[#CC3300] uppercase transition-colors">
                         ← Exit to Website
                     </Link>
                     
                     <div className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Systems Online</span>
+                        <span className="text-xs font-black text-gray-400 uppercase">Systems Online</span>
                     </div>
                 </div>
             </motion.div>
