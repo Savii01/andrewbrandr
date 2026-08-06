@@ -1,24 +1,16 @@
-import { initializeApp, getApps, getApp, cert } from "firebase-admin/app";
-import { getAuth } from "firebase-admin/auth";
-import type { Auth } from "firebase-admin/auth";
+import crypto from "crypto";
 
 /**
- * Firebase Admin SDK singleton.
- * Uses the same service account already in .env.local
- * (GOOGLE_CLIENT_EMAIL + GOOGLE_PRIVATE_KEY) — no extra JSON file needed.
+ * Generates a Firebase Custom Token using Node's native `crypto` module.
+ * Signs an RS256 JWT with the Service Account private key in .env.local.
+ * ZERO external dependencies — 100% compatible with Vercel serverless functions.
  */
-function getAdminApp() {
-    if (getApps().length > 0) {
-        return getApp();
-    }
-
-    const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+export function createFirebaseCustomToken(uid: string, claims: Record<string, any> = {}): string {
     const clientEmail = process.env.GOOGLE_CLIENT_EMAIL;
     let privateKey = process.env.GOOGLE_PRIVATE_KEY;
 
-    if (!projectId || !clientEmail || !privateKey) {
+    if (!clientEmail || !privateKey) {
         const missing = [];
-        if (!projectId) missing.push("NEXT_PUBLIC_FIREBASE_PROJECT_ID");
         if (!clientEmail) missing.push("GOOGLE_CLIENT_EMAIL");
         if (!privateKey) missing.push("GOOGLE_PRIVATE_KEY");
         throw new Error(`Server configuration missing environment variables: ${missing.join(", ")}`);
@@ -31,16 +23,38 @@ function getAdminApp() {
     }
     privateKey = privateKey.replace(/\\n/g, "\n");
 
-    return initializeApp({
-        credential: cert({
-            projectId,
-            clientEmail,
-            privateKey,
-        }),
-    });
-}
+    const header = {
+        alg: "RS256",
+        typ: "JWT",
+    };
 
-export function getAdminAuth(): Auth {
-    getAdminApp();
-    return getAuth();
+    const now = Math.floor(Date.now() / 1000);
+    const payload = {
+        iss: clientEmail,
+        sub: clientEmail,
+        aud: "https://identitytoolkit.googleapis.com/google.identity.identitytoolkit.v1.IdentityToolkit",
+        iat: now,
+        exp: now + 3600,
+        uid: uid,
+        claims: claims,
+    };
+
+    const base64UrlEncode = (obj: object) =>
+        Buffer.from(JSON.stringify(obj))
+            .toString("base64")
+            .replace(/=/g, "")
+            .replace(/\+/g, "-")
+            .replace(/\//g, "_");
+
+    const unsignedToken = `${base64UrlEncode(header)}.${base64UrlEncode(payload)}`;
+
+    const signer = crypto.createSign("RSA-SHA256");
+    signer.update(unsignedToken);
+    const signature = signer
+        .sign(privateKey, "base64")
+        .replace(/=/g, "")
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_");
+
+    return `${unsignedToken}.${signature}`;
 }
