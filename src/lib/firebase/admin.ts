@@ -1,5 +1,28 @@
 import crypto from "crypto";
 
+function formatPrivateKey(rawKey: string): string {
+    let key = rawKey.trim();
+
+    // 1. Remove surrounding double or single quotes
+    if ((key.startsWith('"') && key.endsWith('"')) || (key.startsWith("'") && key.endsWith("'"))) {
+        key = key.slice(1, -1);
+    }
+
+    // 2. Unescape escaped newlines \n -> real newline
+    key = key.replace(/\\n/g, "\n");
+
+    // 3. If header is present but no actual newlines exist (single line pasted), format correctly
+    if (!key.includes("\n") && key.includes("-----BEGIN PRIVATE KEY-----")) {
+        const body = key
+            .replace("-----BEGIN PRIVATE KEY-----", "")
+            .replace("-----END PRIVATE KEY-----", "")
+            .trim();
+        key = `-----BEGIN PRIVATE KEY-----\n${body}\n-----END PRIVATE KEY-----`;
+    }
+
+    return key.trim();
+}
+
 /**
  * Generates a Firebase Custom Token using Node's native `crypto` module.
  * Signs an RS256 JWT with the Service Account private key in .env.local.
@@ -7,21 +30,16 @@ import crypto from "crypto";
  */
 export function createFirebaseCustomToken(uid: string, claims: Record<string, any> = {}): string {
     const clientEmail = process.env.GOOGLE_CLIENT_EMAIL;
-    let privateKey = process.env.GOOGLE_PRIVATE_KEY;
+    const rawPrivateKey = process.env.GOOGLE_PRIVATE_KEY;
 
-    if (!clientEmail || !privateKey) {
+    if (!clientEmail || !rawPrivateKey) {
         const missing = [];
         if (!clientEmail) missing.push("GOOGLE_CLIENT_EMAIL");
-        if (!privateKey) missing.push("GOOGLE_PRIVATE_KEY");
-        throw new Error(`Server configuration missing environment variables: ${missing.join(", ")}`);
+        if (!rawPrivateKey) missing.push("GOOGLE_PRIVATE_KEY");
+        throw new Error(`Server configuration missing environment variables on Vercel: ${missing.join(", ")}`);
     }
 
-    // Clean up private key: remove surrounding quotes if present, replace escaped \n with real newlines
-    privateKey = privateKey.trim();
-    if ((privateKey.startsWith('"') && privateKey.endsWith('"')) || (privateKey.startsWith("'") && privateKey.endsWith("'"))) {
-        privateKey = privateKey.slice(1, -1);
-    }
-    privateKey = privateKey.replace(/\\n/g, "\n");
+    const privateKey = formatPrivateKey(rawPrivateKey);
 
     const header = {
         alg: "RS256",
@@ -48,13 +66,18 @@ export function createFirebaseCustomToken(uid: string, claims: Record<string, an
 
     const unsignedToken = `${base64UrlEncode(header)}.${base64UrlEncode(payload)}`;
 
-    const signer = crypto.createSign("RSA-SHA256");
-    signer.update(unsignedToken);
-    const signature = signer
-        .sign(privateKey, "base64")
-        .replace(/=/g, "")
-        .replace(/\+/g, "-")
-        .replace(/\//g, "_");
+    try {
+        const signer = crypto.createSign("RSA-SHA256");
+        signer.update(unsignedToken);
+        const signature = signer
+            .sign(privateKey, "base64")
+            .replace(/=/g, "")
+            .replace(/\+/g, "-")
+            .replace(/\//g, "_");
 
-    return `${unsignedToken}.${signature}`;
+        return `${unsignedToken}.${signature}`;
+    } catch (err: any) {
+        console.error("Crypto signing failed:", err);
+        throw new Error(`Failed to sign authentication token: ${err?.message || "Invalid GOOGLE_PRIVATE_KEY format"}`);
+    }
 }

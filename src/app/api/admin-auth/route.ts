@@ -8,14 +8,29 @@ export async function POST(request: Request) {
         const adminEmail = process.env.ADMIN_EMAIL;
         const adminPassword = process.env.ADMIN_PASSWORD;
 
-        // 1. Verify credentials match .env
-        if (!adminEmail || !adminPassword || email !== adminEmail || password !== adminPassword) {
-            return NextResponse.json({ success: false, message: 'Invalid credentials' }, { status: 401 });
+        // Check if Vercel server environment is configured
+        if (!adminEmail || !adminPassword) {
+            const missing = [];
+            if (!adminEmail) missing.push("ADMIN_EMAIL");
+            if (!adminPassword) missing.push("ADMIN_PASSWORD");
+            return NextResponse.json(
+                { success: false, message: `Vercel configuration missing environment variables: ${missing.join(", ")}` },
+                { status: 500 }
+            );
         }
 
-        // 2. Generate a Firebase custom token using native Node crypto — ZERO external dependencies,
-        //    works 100% reliably on Vercel without ESM/bundling errors.
-        const uid = `admin_${adminEmail.replace(/[^a-zA-Z0-9]/g, '_')}`;
+        // Verify credentials match .env
+        const trimmedInputEmail = (email || '').trim().toLowerCase();
+        const trimmedAdminEmail = adminEmail.trim().toLowerCase();
+        const trimmedInputPassword = (password || '').trim();
+        const trimmedAdminPassword = adminPassword.trim();
+
+        if (trimmedInputEmail !== trimmedAdminEmail || trimmedInputPassword !== trimmedAdminPassword) {
+            return NextResponse.json({ success: false, message: 'Invalid email or password.' }, { status: 401 });
+        }
+
+        // Generate custom token using native Node crypto
+        const uid = `admin_${trimmedAdminEmail.replace(/[^a-zA-Z0-9]/g, '_')}`;
         const customToken = createFirebaseCustomToken(uid, { admin: true });
 
         return NextResponse.json({ success: true, customToken });
