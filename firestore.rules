@@ -1,0 +1,98 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if the request is from the admin.
+    // Replace the email below if you change your ADMIN_EMAIL in .env.local.
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == 'saviiandrewbrandr@gmail.com';
+    }
+
+    // Site Content: Anyone can read, only Admin can write
+    match /site_content/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Custom Pages: Anyone can read, only Admin can write
+    match /pages/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Portfolio Projects: Anyone can read, only Admin can write
+    match /portfolio/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Availability: Anyone can view, only Admin can write
+    match /availability/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Discovery Briefs: Anyone can submit (create), only Admin can read/manage.
+    // Anyone may confirm their own email by setting lead.emailVerified to true
+    // (verified by the emailed one-click link / code).
+    match /briefs/{document} {
+      allow create: if true;
+      allow read, delete: if isAdmin();
+      allow update: if isAdmin()
+        || (request.resource.data.lead.emailVerified == true
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lead.emailVerified']));
+    }
+
+    // Email verification records: public read so the one-click page can check
+    // the code, public create/update so codes can be issued and confirmed.
+    match /verifications/{document} {
+      allow read: if true;
+      allow create, update: if request.resource.data.code is string
+                            && request.resource.data.code.size() == 6;
+      allow delete: if isAdmin();
+    }
+
+    // Bookings: Anyone can book (create), only Admin can read/manage
+    match /bookings/{document} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Booked Slots: Anyone can see busy times or lock a slot, only Admin can manage/delete
+    match /booked_slots/{document} {
+      allow read, create: if true;
+      allow update, delete: if isAdmin();
+    }
+
+    // Dashboard Collections: Only Admin can read/write
+    match /clients/{document} {
+      allow read, write: if isAdmin();
+    }
+    match /engagements/{document} {
+      allow read, write: if isAdmin();
+      // Anyone may confirm the client's email by setting contact.emailVerified
+      // to true (verified by the emailed one-click link / code).
+      allow update: if isAdmin()
+        || (request.resource.data.contact.emailVerified == true
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['contact.emailVerified']));
+    }
+    match /contracts/{document} {
+      allow read, write: if isAdmin();
+    }
+    match /contract_templates/{document} {
+      allow read, write: if isAdmin();
+    }
+    match /invoices/{document} {
+      allow read, write: if isAdmin();
+    }
+    match /retainers/{document} {
+      allow read, write: if isAdmin();
+    }
+    match /proposals/{document} {
+      allow read, write: if isAdmin();
+    }
+    match /proposal_templates/{document} {
+      allow read, write: if isAdmin();
+    }
+  }
+}

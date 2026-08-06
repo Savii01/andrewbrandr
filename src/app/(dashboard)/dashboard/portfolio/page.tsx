@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import { FiPlus, FiImage, FiMoreVertical, FiEye, FiEyeOff, FiTrash2, FiExternalLink } from "react-icons/fi";
+import { FiPlus, FiImage, FiMoreVertical, FiEye, FiEyeOff, FiTrash2, FiExternalLink, FiEdit2 } from "react-icons/fi";
 import { getProjects, updateProject, deleteProject } from "@/lib/firebase/portfolio";
 import { Project } from "@/lib/types/portfolio";
 import NewProjectModal from "@/components/dashboard/NewProjectModal";
@@ -11,6 +11,7 @@ export default function PortfolioAdminPage() {
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
 
     const fetchProjects = async () => {
         setLoading(true);
@@ -39,8 +40,9 @@ export default function PortfolioAdminPage() {
         <div className="max-w-7xl mx-auto">
             <NewProjectModal isOpen={isModalOpen} onClose={() => {
                 setIsModalOpen(false);
+                setProjectToEdit(null);
                 fetchProjects();
-            }} />
+            }} projectToEdit={projectToEdit} />
 
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
                 <div>
@@ -53,7 +55,7 @@ export default function PortfolioAdminPage() {
                 </div>
                 
                 <button
-                    onClick={() => setIsModalOpen(true)}
+                    onClick={() => { setProjectToEdit(null); setIsModalOpen(true); }}
                     className="flex items-center gap-2 px-6 py-3 bg-orange text-white text-sm font-bold rounded-xl hover:bg-black transition-all shadow-xl shadow-orange/10"
                 >
                     <FiPlus size={18} />
@@ -79,9 +81,13 @@ export default function PortfolioAdminPage() {
                         >
                             {/* Project Preview */}
                             <div className="aspect-video relative overflow-hidden bg-[var(--surface-elevated)]">
-                                {project.image ? (
+                                {(project.coverImage || (project as any).image) ? (
                                     <img 
-                                        src={project.image} 
+                                        src={
+                                            typeof (project.coverImage || (project as any).image) === 'string'
+                                                ? (project.coverImage || (project as any).image)
+                                                : ((project.coverImage as any)?.url || (project as any).image?.url || "")
+                                        } 
                                         alt={project.name} 
                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                     />
@@ -112,8 +118,8 @@ export default function PortfolioAdminPage() {
                                 </div>
 
                                 <div className="flex flex-wrap gap-2 mb-6">
-                                    {project.category.slice(0, 2).map(cat => (
-                                        <span key={cat} className="px-2 py-0.5 rounded-md bg-[var(--surface-elevated)] border border-[var(--border-color)] text-xs font-bold text-[var(--text-secondary)]">
+                                    {(project.services || (project as any).category || []).slice(0, 2).map((cat: string) => (
+                                        <span key={cat} className="px-2 py-0.5 rounded-md bg-[var(--surface-elevated)] border border-[var(--border-color)] text-xs font-bold text-[var(--text-muted)]">
                                             {cat}
                                         </span>
                                     ))}
@@ -121,9 +127,16 @@ export default function PortfolioAdminPage() {
 
                                 <div className="flex items-center justify-between pt-4 border-t border-[var(--border-color)]">
                                     <span className="text-xs font-bold text-[var(--text-muted)]">
-                                        Added {new Date(project.createdAt?.seconds * 1000).toLocaleDateString()}
+                                        Added {project.createdAt?.seconds ? new Date(project.createdAt.seconds * 1000).toLocaleDateString() : new Date().toLocaleDateString()}
                                     </span>
                                     <div className="flex gap-3">
+                                        <button 
+                                            onClick={() => { setProjectToEdit(project); setIsModalOpen(true); }}
+                                            className="p-2 text-orange/40 hover:text-orange transition-colors"
+                                            title="Edit project"
+                                        >
+                                            <FiEdit2 size={16} />
+                                        </button>
                                         <button 
                                             onClick={() => handleDelete(project.id)}
                                             className="p-2 text-red-500/40 hover:text-red-500 transition-colors"

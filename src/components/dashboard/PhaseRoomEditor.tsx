@@ -27,15 +27,26 @@ export default function PhaseRoomEditor({
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
-        const unsubscribe = onSnapshot(doc(db, "phases", phaseId), (snapshot) => {
-            if (snapshot.exists()) {
-                const data = snapshot.data() as PhaseData;
-                setPhase(data);
-                setLocalContent(data.content);
-            }
-        });
+        let active = true;
+        let unsubscribe: (() => void) | undefined;
 
-        return () => unsubscribe();
+        const timer = setTimeout(() => {
+            if (!active) return;
+            unsubscribe = onSnapshot(doc(db, "phases", phaseId), (snapshot) => {
+                if (!active) return;
+                if (snapshot.exists()) {
+                    const data = snapshot.data() as PhaseData;
+                    setPhase(data);
+                    setLocalContent(data.content);
+                }
+            });
+        }, 0);
+
+        return () => {
+            active = false;
+            clearTimeout(timer);
+            if (unsubscribe) unsubscribe();
+        };
     }, [phaseId]);
 
     const handleSave = async () => {

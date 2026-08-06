@@ -113,8 +113,8 @@ export default function CommandCenter() {
                 </div>
 
                 <button
-                    onClick={() => setIsModalOpen(true)}
-                    className="flex items-center gap-2 px-6 py-3 bg-orange text-white text-base font-bold rounded-xl hover:bg-black transition-all shadow-xl shadow-orange/10 self-start md:self-auto"
+                    onClick={() => window.dispatchEvent(new CustomEvent("open-new-engagement-modal"))}
+                    className="flex items-center gap-2 px-6 py-3 bg-orange text-white text-base font-bold rounded-xl hover:bg-black transition-all shadow-xl shadow-orange/10 self-start md:self-auto cursor-pointer"
                 >
                     <FiPlus size={18} />
                     New Engagement
@@ -183,7 +183,7 @@ export default function CommandCenter() {
                         ) : engagements.length > 0 ? (
                             engagements.slice(0, 5).map((eng) => {
                                 const progress = getMacroProgress(eng);
-                                const stageLabel = STAGE_CONFIG[eng.stagePrimary].label;
+                                const stageLabel = STAGE_CONFIG[eng.stagePrimary]?.label || "Unknown Stage";
                                 
                                 return (
                                     <div 

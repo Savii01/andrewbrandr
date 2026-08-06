@@ -11,6 +11,10 @@ import PaymentStep from "@/components/PaymentStep";
 import Link from "next/link";
 import { MdArrowForward } from "react-icons/md";
 import { FaShieldAlt } from "react-icons/fa";
+import { db } from "@/lib/firebase/config";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { isValidEmail } from "@/lib/email-validation";
+import { sendTargetVerificationEmail } from "@/lib/firebase/verifications";
 
 const STEPS = [
     { id: 1, title: "Brief", description: "Tell us about your project details." },
@@ -67,7 +71,7 @@ function OnboardingContent() {
         } else if (currentStep === 2) {
             if (!leadData.fullName) newErrors.fullName = "Required";
             if (!leadData.email) newErrors.email = "Required";
-            else if (!/^\S+@\S+\.\S+$/.test(leadData.email)) newErrors.email = "Invalid email";
+            else if (!isValidEmail(leadData.email)) newErrors.email = "Invalid email";
             if (!leadData.source) newErrors.source = "Required";
             if (currency === "ngn" && !leadData.whatsapp) newErrors.whatsapp = "Required";
             if (currency === "usd" && !leadData.telegram) newErrors.telegram = "Required";
@@ -104,10 +108,59 @@ function OnboardingContent() {
         if (!validateStep()) return;
         setIsSubmitting(true);
         try {
-            // TODO: Write enterprise brief to Firestore
+            if (db) {
+                const docRef = await addDoc(collection(db, "briefs"), {
+                    plan: plan.slug,
+                    retainer: false,
+                    currency,
+                    status: "pending",
+                    paymentStatus: "enterprise_quote",
+                    lead: {
+                        fullName: leadData.fullName || "",
+                        email: leadData.email || "",
+                        emailVerified: leadData.emailVerified === true,
+                        phone: leadData.whatsapp || leadData.telegram || "",
+                        source: leadData.source || "",
+                    },
+                    brief: briefData,
+                    createdAt: serverTimestamp(),
+                });
+
+                // Auto-send the email verification link if the client didn't verify inline
+                if (leadData.emailVerified !== true && leadData.email && isValidEmail(leadData.email)) {
+                    sendTargetVerificationEmail({
+                        targetType: "brief",
+                        targetId: docRef.id,
+                        email: leadData.email,
+                        clientName: leadData.fullName,
+                    }).catch((err) => console.error("Verify email send error:", err));
+                }
+
+                // Call integrations API asynchronously
+                fetch("/api/onboarding", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        plan: plan.slug,
+                        retainer: false,
+                        paymentStatus: "enterprise_quote",
+                        lead: {
+                            name: leadData.fullName || "",
+                            email: leadData.email || "",
+                            phone: leadData.whatsapp || leadData.telegram || "",
+                        },
+                        brief: {
+                            rawNotes: [briefData.proposedGoal, briefData.description || briefData.notes].filter(Boolean).join("\n\n") || "",
+                            consultationDate: briefData.consultationDate || null,
+                        },
+                        engagementId: docRef.id,
+                    }),
+                }).catch((err) => console.error("Onboarding API integration error:", err));
+            }
+
             router.push(`/thank-you?plan=${plan.slug}&currency=${currency}&clientName=${encodeURIComponent(leadData.fullName || "")}&enterprise=true`);
         } catch (e) {
-            console.error(e);
+            console.error("Enterprise submission error:", e);
         } finally {
             setIsSubmitting(false);
         }
@@ -116,13 +169,52 @@ function OnboardingContent() {
     const handlePaymentSubmit = async (receiptFile: File | null, method: string) => {
         setIsSubmitting(true);
         try {
-            // TODO: Upload receiptFile to Firebase Storage, then write brief doc to Firestore
-            console.log("Submission:", { plan: plan.slug, brief: briefData, lead: leadData, method, retainer: isRetainerSelected, currency });
+            if (db) {
+                const docRef = await addDoc(collection(db, "briefs"), {
+                    plan: plan.slug,
+                    retainer: isRetainerSelected,
+                    currency,
+                    status: "pending",
+                    paymentStatus: method === "bank_transfer" ? "awaiting_verification" : "pending",
+                    paymentMethod: method,
+                    lead: {
+                        fullName: leadData.fullName || "",
+                        email: leadData.email || "",
+                        emailVerified: leadData.emailVerified === true,
+                        phone: leadData.whatsapp || leadData.telegram || "",
+                        source: leadData.source || "",
+                    },
+                    brief: briefData,
+                    createdAt: serverTimestamp(),
+                });
+
+                // Call integrations API asynchronously (Google Drive, Calendar/Meet, Gemini)
+                fetch("/api/onboarding", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        plan: plan.slug,
+                        retainer: isRetainerSelected,
+                        paymentStatus: method === "bank_transfer" ? "awaiting_verification" : "pending",
+                        lead: {
+                            name: leadData.fullName || "",
+                            email: leadData.email || "",
+                            phone: leadData.whatsapp || leadData.telegram || "",
+                        },
+                        brief: {
+                            rawNotes: [briefData.proposedGoal, briefData.description || briefData.notes].filter(Boolean).join("\n\n") || "",
+                            consultationDate: briefData.consultationDate || null,
+                        },
+                        engagementId: docRef.id,
+                    }),
+                }).catch((err) => console.error("Onboarding API integration error:", err));
+            }
+
             router.push(
                 `/thank-you?plan=${plan.slug}&retainer=${isRetainerSelected}&currency=${currency}&clientName=${encodeURIComponent(leadData.fullName || "")}`
             );
         } catch (e) {
-            console.error(e);
+            console.error("Payment submission error:", e);
         } finally {
             setIsSubmitting(false);
         }

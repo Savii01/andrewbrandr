@@ -43,6 +43,8 @@ export interface CreateEngagementInput {
     clientIds: string[];
     projectName: string;
     tier: EngagementTier;
+    paymentStructure?: "once" | "twice";
+    customPrice?: number;
 }
 
 /**
@@ -61,6 +63,9 @@ export async function createEngagement(input: CreateEngagementInput) {
         estimatedCompletion: null,
         depositPaid: false,
         contractSigned: false,
+        paymentStructure: input.paymentStructure || "twice",
+        finalPaid: false,
+        customPrice: input.customPrice || undefined,
         calendarEventIds: [],
         briefUrl: "",
         portalToken: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
@@ -245,6 +250,11 @@ export async function markDepositPaid(engagementId: string) {
     await addActivityLog(engagementId, "Deposit marked as paid", "system");
 }
 
+export async function markFinalPaid(engagementId: string) {
+    await updateEngagement(engagementId, { finalPaid: true });
+    await addActivityLog(engagementId, "Final payment marked as paid", "system");
+}
+
 export async function markContractSigned(engagementId: string) {
     await updateEngagement(engagementId, { contractSigned: true });
     await addActivityLog(engagementId, "Contract marked as signed", "system");
@@ -257,4 +267,52 @@ export async function markContractSigned(engagementId: string) {
 export async function updateStudioStats(updates: Record<string, any>) {
     const docRef = doc(db, "metadata", "studio_stats");
     await updateDoc(docRef, updates);
+}
+
+export async function updateStageDocumentation(
+    engagementId: string,
+    stage: EngagementStage,
+    documentationContent: string
+) {
+    const docRef = doc(db, "engagements", engagementId);
+    await updateDoc(docRef, {
+        [`stages.${stage}.documentation`]: documentationContent,
+        updatedAt: Timestamp.now(),
+    });
+}
+
+export async function addStageMilestone(
+    engagementId: string,
+    stage: EngagementStage,
+    milestoneKey: string
+) {
+    const docRef = doc(db, "engagements", engagementId);
+    await updateDoc(docRef, {
+        [`milestones.${stage}.${milestoneKey}`]: false,
+        updatedAt: Timestamp.now(),
+    });
+}
+
+export async function deleteStageMilestone(
+    engagementId: string,
+    stage: EngagementStage,
+    milestoneKey: string
+) {
+    const docRef = doc(db, "engagements", engagementId);
+    const { deleteField } = await import("firebase/firestore");
+    await updateDoc(docRef, {
+        [`milestones.${stage}.${milestoneKey}`]: deleteField(),
+        updatedAt: Timestamp.now(),
+    });
+}
+
+export async function updateEngagementPrice(
+    engagementId: string,
+    customPrice: number
+) {
+    const docRef = doc(db, "engagements", engagementId);
+    await updateDoc(docRef, {
+        customPrice: customPrice,
+        updatedAt: Timestamp.now(),
+    });
 }

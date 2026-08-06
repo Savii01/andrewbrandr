@@ -34,7 +34,14 @@ export default function AnalyticsPage() {
 
     // Calculate phase distribution
     const phaseCounts = engagements.reduce((acc: any, eng) => {
-        acc[eng.phase] = (acc[eng.phase] || 0) + 1;
+        const stage = eng.stagePrimary;
+        let phase = "Strategy";
+        if (stage === "discovery" || stage === "proposal") phase = "Strategy";
+        else if (stage === "strategy" || stage === "creativeDirection") phase = "Design";
+        else if (stage === "identity" || stage === "presentation") phase = "Systems";
+        else phase = "Execution";
+
+        acc[phase] = (acc[phase] || 0) + 1;
         return acc;
     }, {});
 

@@ -123,6 +123,20 @@ const BriefForm: React.FC<BriefFormProps> = ({ plan, onUpdate, data, errors }) =
                 </div>
 
                 <div className="space-y-1">
+                    <label className={labelClasses}>Proposed Goal</label>
+                    <span className={subLabelClasses}>What is the main goal you want this brand to achieve?</span>
+                    <textarea
+                        name="proposedGoal"
+                        value={data.proposedGoal || ""}
+                        onChange={handleChange}
+                        rows={3}
+                        className={inputClasses("proposedGoal")}
+                        placeholder="e.g., Break into the Nigerian market and double online sales within 6 months..."
+                    ></textarea>
+                    {renderError("proposedGoal")}
+                </div>
+
+                <div className="space-y-1">
                     <label className={labelClasses}>Describe your business in two sentences *</label>
                     <textarea
                         name="description"
@@ -316,6 +330,19 @@ const BriefForm: React.FC<BriefFormProps> = ({ plan, onUpdate, data, errors }) =
                     <label className={labelClasses}>Organisation Name *</label>
                     <input name="businessName" value={data.businessName || ""} onChange={handleChange} className={inputClasses("businessName")} />
                     {renderError("businessName")}
+                </div>
+                <div className="space-y-1">
+                    <label className={labelClasses}>Proposed Goal</label>
+                    <span className={subLabelClasses}>What is the main goal you want this project to achieve?</span>
+                    <textarea
+                        name="proposedGoal"
+                        value={data.proposedGoal || ""}
+                        onChange={handleChange}
+                        rows={3}
+                        className={inputClasses("proposedGoal")}
+                        placeholder="e.g., Rebrand the organisation ahead of our new product launch in Q3..."
+                    ></textarea>
+                    {renderError("proposedGoal")}
                 </div>
                 <div className="space-y-1">
                     <label className={labelClasses}>Project Scope *</label>

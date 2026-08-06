@@ -1,0 +1,18 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Helper function to check if the request is from the admin.
+    // Replace the email below if you change your ADMIN_EMAIL in .env.local.
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == 'saviiandrewbrandr@gmail.com';
+    }
+
+    match /{allPaths=**} {
+      // Allow public read of all portfolio/processes assets
+      allow read: if true;
+      // Only the admin can upload, replace or delete files
+      allow write: if isAdmin();
+    }
+  }
+}

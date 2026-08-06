@@ -9,7 +9,7 @@ interface GoogleFormsEmbedProps {
 
 export default function GoogleFormsEmbed({ formUrl, title }: GoogleFormsEmbedProps) {
     if (!formUrl) return (
-        <div className="p-12 rounded-[2rem] bg-[var(--surface-elevated)]/30 border border-dashed border-[var(--border-color)] text-center">
+        <div className="p-12 rounded-2xl bg-[var(--surface-elevated)]/30 border border-dashed border-[var(--border-color)] text-center">
             <p className="text-xs font-bold text-[var(--text-muted)] uppercase">No questionnaire linked</p>
             <p className="text-xs text-[var(--text-muted)] mt-1">Waiting for studio brief configuration</p>
         </div>
@@ -37,7 +37,7 @@ export default function GoogleFormsEmbed({ formUrl, title }: GoogleFormsEmbedPro
                 </a>
             </div>
 
-            <div className="rounded-[2rem] border border-[var(--border-color)] bg-white overflow-hidden aspect-[4/5] w-full">
+            <div className="rounded-2xl border border-[var(--border-color)] bg-white overflow-hidden aspect-[4/5] w-full">
                 <iframe
                     src={formUrl}
                     className="w-full h-full border-none"

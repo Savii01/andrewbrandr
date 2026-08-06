@@ -4,14 +4,16 @@ import React, { useEffect, useState } from "react";
 import { useParams, notFound } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { MdArrowBack, MdCheck, MdArrowOutward } from "react-icons/md";
-import { pricingPlans } from "@/lib/pricingPlans";
+import { getSiteContent } from "@/lib/firebase/cms";
+import { pricingPlans as defaultPlans } from "@/lib/pricingPlans";
+import { db } from "@/lib/firebase/config";
 import Link from "next/link";
 import QualificationForm from "@/components/public/QualificationForm";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6, ease: [0.33, 1, 0.68, 1] }
+  transition: { duration: 0.6, ease: [0.33, 1, 0.68, 1] as const }
 };
 
 type ViewState = "DETAILS" | "FORM" | "CONFIRMATION";
@@ -22,6 +24,8 @@ export default function PricingDetailPage() {
   const [mounted, setMounted] = useState(false);
   const [isNigeria, setIsNigeria] = useState(false);
   const [viewState, setViewState] = useState<ViewState>("DETAILS");
+  const [cmsData, setCmsData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setMounted(true);
@@ -31,12 +35,82 @@ export default function PricingDetailPage() {
     } catch (e) {
       console.error(e);
     }
+
+    async function loadCMS() {
+      const data = await getSiteContent();
+      setCmsData(data);
+      setLoading(false);
+    }
+    loadCMS();
   }, []);
 
-  const plan = pricingPlans.find((p) => p.slug === slug);
+  const plans = cmsData?.pricing?.plans || defaultPlans;
+  const plan = plans.find((p: any) => p.slug === slug);
+  const [submittingBrief, setSubmittingBrief] = useState(false);
+
+  const handleFormSubmit = async (formData: any) => {
+    setSubmittingBrief(true);
+    try {
+      if (db && plan) {
+        const { collection, addDoc } = await import("firebase/firestore");
+        await addDoc(collection(db, "briefs"), {
+          plan: plan.slug,
+          status: "pending",
+          createdAt: new Date(),
+          lead: {
+            fullName: formData.name || "",
+            email: formData.email || "",
+            country: formData.country || "",
+            comm_pref: formData.comm_pref || "Email",
+            whatsapp: formData.whatsapp || "",
+            telegram: formData.telegram || "",
+            currency: isNigeria ? "ngn" : "usd"
+          },
+          brief: {
+            businessName: formData.business || formData.org || "Unnamed Business",
+            selling: formData.selling || "",
+            description: formData.description || formData.trigger || formData.outcome || "",
+            target: formData.target || "",
+            vibe: formData.vibe || [],
+            timeline: formData.timeline || "",
+            ...formData
+          }
+        });
+      }
+      setViewState("CONFIRMATION");
+    } catch (error) {
+      console.error("Error submitting brief to Firestore:", error);
+      alert("Submission failed. Please check your connection and try again.");
+    } finally {
+      setSubmittingBrief(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[#FDF3E6]">
+        <div className="w-8 h-8 border-4 border-orange border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   if (!plan) return notFound();
 
-  const price = mounted && isNigeria ? plan.investment.priceNGN : plan.investment.priceUSD;
+  // Price calculations
+  const price = mounted && isNigeria 
+    ? (plan.investment?.priceNGN || plan.priceNGN) 
+    : (plan.investment?.priceUSD || plan.priceUSD);
+
+  const stage = plan.stage || `Stage 0${plan.id || 1}`;
+  const subtitle = plan.subtitle || "";
+  const titleText = plan.title || "";
+  const headerDescription = plan.description || "";
+  const highlights = plan.highlights || plan.whoThisIsFor || [];
+  const sectionsList = plan.sections || [];
+  const timelineText = plan.timeline || "4 Weeks";
+  const investmentDetails = plan.footerText || plan.investment?.details || "Tailored strategic delivery.";
+  const walkAwayList = plan.whatYouWalkAwayWith || plan.highlights || [];
+  const discoveryIntro = plan.discoveryIntro || "Apply below and we will get back to you with next steps.";
 
   if (!mounted) return null;
 
@@ -66,7 +140,7 @@ export default function PricingDetailPage() {
               <div className="mb-20">
                 <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-4">
                   <span className="text-[#CC3300] font-bold text-xl block">
-                    {plan.stage} — {plan.subtitle}
+                    {stage} — {subtitle}
                   </span>
 
                   {/* Currency Toggle */}
@@ -95,12 +169,12 @@ export default function PricingDetailPage() {
                 </div>
 
                 <h1 className="text-[42px] md:text-[40px] font-extrabold text-[#0F0000] mb-8 tracking-tight">
-                  {plan.stage} — {plan.title}
+                  {titleText}
                 </h1>
                 
-                <div className="space-y-6 text-[#0F0000] text-[18px] md:text-[21px] leading-[0.9] font-medium">
-                  {plan.headerDescription.split('. ').map((sentence, i) => (
-                    <p key={i}>{sentence}.</p>
+                <div className="space-y-6 text-[#0F0000] text-[18px] md:text-[21px] leading-[1.3] font-medium">
+                  {headerDescription.split('. ').filter(Boolean).map((sentence: string, i: number) => (
+                    <p key={i}>{sentence.trim()}.</p>
                   ))}
                 </div>
 
@@ -111,7 +185,7 @@ export default function PricingDetailPage() {
                    </div>
                    <div>
                      <p className="text-[11px] font-bold uppercase tracking-widest text-[#0F0000]/40 mb-1">Focus</p>
-                     <p className="text-2xl font-black text-[#0F0000]">{plan.slugText}</p>
+                     <p className="text-2xl font-black text-[#0F0000]">{plan.slugText || plan.slug || ""}</p>
                    </div>
                 </div>
               </div>
@@ -122,7 +196,7 @@ export default function PricingDetailPage() {
               <section className="mb-24">
                 <h2 className="text-[16px] font-bold uppercase text-[#CC3300] mb-10">Who this stage is for</h2>
                 <div className="space-y-6">
-                  {plan.whoThisIsFor.map((item, i) => (
+                  {highlights.map((item: string, i: number) => (
                     <p key={i} className="text-[20px] md:text-[24px] font-bold text-[#0F0000] leading-tight flex items-start gap-4">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#CC3300] mt-3 shrink-0" />
                       {item}
@@ -145,14 +219,14 @@ export default function PricingDetailPage() {
                 <h2 className="text-[16px] font-bold uppercase text-[#CC3300] mb-12">What&apos;s included</h2>
                 
                 <div className="space-y-20">
-                  {plan.sections.map((section, idx) => (
+                  {sectionsList.map((section: any, idx: number) => (
                     <div key={idx}>
                       <h3 className="text-2xl font-black text-[#0F0000] mb-4">{section.title}</h3>
                       {section.description && (
                         <p className="text-[#0F0000]/60 mb-8 italic">{section.description}</p>
                       )}
                       <ul className="space-y-4">
-                        {section.items.map((item, i) => (
+                        {(section.items || []).map((item: string, i: number) => (
                           <li key={i} className="flex items-start gap-4 text-lg text-[#0F0000]/80 font-medium">
                             <MdCheck className="text-[#CC3300] mt-1 shrink-0" size={20} />
                             {item}
@@ -170,7 +244,7 @@ export default function PricingDetailPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mb-24">
                 <div>
                   <h2 className="text-[16px] font-bold uppercase text-[#CC3300] mb-6">Timeline</h2>
-                  <p className="text-3xl font-black text-[#0F0000] mb-4">{plan.timeline}</p>
+                  <p className="text-3xl font-black text-[#0F0000] mb-4">{timelineText}</p>
                   <p className="text-[#0F0000]/60 text-sm leading-relaxed font-medium">
                     Clear milestones are shared inside the client portal once the project begins.
                   </p>
@@ -179,7 +253,7 @@ export default function PricingDetailPage() {
                   <h2 className="text-[16px] font-bold uppercase text-[#CC3300] mb-6">Investment</h2>
                   <p className="text-3xl font-black text-[#0F0000] mb-4">{price}</p>
                   <p className="text-[#0F0000]/60 text-sm leading-relaxed font-medium">
-                    {plan.investment.details}
+                    {investmentDetails}
                   </p>
                 </div>
               </div>
@@ -187,10 +261,10 @@ export default function PricingDetailPage() {
               <hr className="border-[#0F0000]/10 mb-20" />
 
               {/* What you walk away with */}
-              <section className="mb-24 bg-[#0F0000] text-[#FDF3E6] rounded-[2.5rem] p-10 md:p-16">
+              <section className="mb-24 bg-[#0F0000] text-[#FDF3E6] rounded-2xl p-10 md:p-16">
                 <h2 className="text-[16px] font-bold uppercase bg-[#CC3300] p-2 rounded-full w-fit text-[#FDF3E6] mb-10">What you walk away with</h2>
                 <div className="space-y-8">
-                  {plan.whatYouWalkAwayWith.map((item, i) => (
+                  {walkAwayList.map((item: string, i: number) => (
                     <p key={i} className="text-2xl md:text-2xl font-extrabold leading-tight">
                       {item}
                     </p>
@@ -200,15 +274,15 @@ export default function PricingDetailPage() {
 
               {/* Final CTA */}
               <section className="mb-20 py-20 border-t border-[#0F0000]/10">
-                <h2 className="text-[16px] font-bold uppercase text-[#CC3300] mb-10">Apply for {plan.stage}</h2>
+                <h2 className="text-[16px] font-bold uppercase text-[#CC3300] mb-10">Apply for {stage}</h2>
                 <p className="text-xl md:text-2xl text-[#0F0000] font-bold leading-relaxed mb-12">
-                  {plan.discoveryIntro}
+                  {discoveryIntro}
                 </p>
                 <button
                   onClick={() => setViewState("FORM")}
                   className="inline-flex items-center justify-between w-full bg-[#0f0000] text-white px-10 py-6 rounded-full text-lg font-bold hover:bg-[#CC3300] transition-colors group"
                 >
-                  Apply for {plan.stage}
+                  Apply for {stage}
                   <MdArrowOutward className="w-6 h-6 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
                 </button>
                 <p className="mt-8 text-center text-[#0F0000]/80 text-lg font-medium">
@@ -220,7 +294,7 @@ export default function PricingDetailPage() {
               <section className="mt-12 pt-20 border-t border-[#0F0000]/10">
                 <h2 className="text-[16px] font-extrabold uppercase text-[#0F0000]/30 mb-8 text-center">Compare Stages</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  {pricingPlans.map((otherPlan) => (
+                  {plans.map((otherPlan: any) => (
                     <Link
                       key={otherPlan.slug}
                       href={`/pricing/${otherPlan.slug}`}
@@ -230,7 +304,7 @@ export default function PricingDetailPage() {
                         : "bg-white border-[#0F0000]/10 text-[#0F0000] hover:border-[#CC3300] hover:text-[#CC3300]"
                       }`}
                     >
-                      <span className="text-[10px] font-black uppercase tracking-widest opacity-60 group-hover:opacity-100">{otherPlan.stage}</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest opacity-60 group-hover:opacity-100">{otherPlan.stage || `Stage 0${otherPlan.id}`}</span>
                       <span className="text-[13px] font-bold whitespace-nowrap">{otherPlan.subtitle}</span>
                     </Link>
                   ))}
@@ -247,17 +321,27 @@ export default function PricingDetailPage() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
             >
-              <QualificationForm 
-                slug={plan.slug} 
-                stage={plan.stage} 
-                onSubmit={() => setViewState("CONFIRMATION")} 
-              />
-              <button
-                onClick={() => setViewState("DETAILS")}
-                className="w-full text-center text-[#0F0000]/40 hover:text-[#CC3300] font-bold uppercase tracking-widest text-xs transition-colors mt-8"
-              >
-                Back to details
-              </button>
+              {submittingBrief ? (
+                <div className="bg-white rounded-[3rem] p-16 border-6 border-[#0F0000] shadow-2xl flex flex-col items-center justify-center py-32 text-center my-10">
+                  <div className="w-16 h-16 border-6 border-orange border-t-transparent rounded-full animate-spin mb-8" />
+                  <h3 className="text-2xl font-black text-[#0F0000] tracking-tight">Submitting Brief...</h3>
+                  <p className="text-sm font-medium text-[#0F0000]/50 mt-2">Uploading lead details securely to your Andrewbrandr Dashboard Inbox</p>
+                </div>
+              ) : (
+                <>
+                  <QualificationForm 
+                    slug={plan.slug} 
+                    stage={plan.stage} 
+                    onSubmit={handleFormSubmit} 
+                  />
+                  <button
+                    onClick={() => setViewState("DETAILS")}
+                    className="w-full text-center text-[#0F0000]/40 hover:text-[#CC3300] font-bold uppercase tracking-widest text-xs transition-colors mt-8"
+                  >
+                    Back to details
+                  </button>
+                </>
+              )}
             </motion.div>
           )}
 

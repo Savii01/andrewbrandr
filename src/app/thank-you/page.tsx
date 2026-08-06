@@ -62,15 +62,13 @@ function ThankYouContent() {
                         <div className="flex-1">
                             <h4 className="font-bold text-black mb-0.5">Book your 30-minute kickoff call</h4>
                             <p className="text-gray-500 text-sm mb-3">Pick a time that works. We'll review your brief and align before we start.</p>
-                            <a
-                                href={CAL_URL}
-                                target="_blank"
-                                rel="noopener noreferrer"
+                            <Link
+                                href="/discovery"
                                 className="inline-flex items-center gap-2 bg-black text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-orange transition-colors"
                             >
                                 <MdCalendarToday size={15} />
                                 Book a call
-                            </a>
+                            </Link>
                         </div>
                     </div>
 

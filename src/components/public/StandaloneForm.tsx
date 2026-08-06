@@ -82,7 +82,12 @@ Project Goals: ${emailData.projectGoals}`;
     setWhatsappMessage(message);
 
     emailjs
-      .send('service_p8qel8i', 'template_standalone', emailData, 'Y21i1oUIg68Guej_s')
+      .send(
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
+        process.env.NEXT_PUBLIC_EMAILJS_STANDALONE_TEMPLATE_ID!,
+        emailData,
+        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!
+      )
       .then(() => {
         setIsSubmitted(true);
         setShowAlert(true);

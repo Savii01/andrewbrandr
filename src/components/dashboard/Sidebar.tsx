@@ -19,6 +19,8 @@ import {
     FiSun,
     FiMoon,
     FiChevronLeft,
+    FiLayout,
+    FiCalendar,
 } from "react-icons/fi";
 
 const navGroups = [
@@ -32,6 +34,7 @@ const navGroups = [
         title: "Commercial",
         items: [
             { label: "Engagements", href: "/dashboard/engagements", icon: FiBriefcase },
+            { label: "Bookings", href: "/dashboard/bookings", icon: FiCalendar },
             { label: "Briefs (Inbox)", href: "/dashboard/briefs", icon: FiMessageSquare },
             { label: "Finances", href: "/dashboard/finances", icon: FiDollarSign },
         ]
@@ -46,6 +49,7 @@ const navGroups = [
     {
         title: "System",
         items: [
+            { label: "Website CMS", href: "/dashboard/cms", icon: FiLayout },
             { label: "Communications", href: "/dashboard/communications", icon: FiMessageSquare },
             { label: "Settings", href: "/dashboard/settings", icon: FiSettings },
         ]
@@ -69,101 +73,12 @@ export default function DashboardSidebar() {
         return pathname.startsWith(href);
     };
 
-    const SidebarContent = () => (
-        <div className="flex flex-col h-full">
-            {/* Logo */}
-            <div className="flex items-center justify-between p-4 mb-2">
-                <Link href="/dashboard" className="flex items-center gap-2">
-                    {collapsed ? (
-                        <Image
-                            src="/brand_assets/icon_logo_black_svg.svg"
-                            alt="Brandr Icon"
-                            width={28}
-                            height={28}
-                            className="flex-shrink-0"
-                        />
-                    ) : (
-                        <Image
-                            src="/brand_assets/secondary_logo_black_svg.svg"
-                            alt="Brandr"
-                            width={110}
-                            height={24}
-                            className="flex-shrink-0 w-auto h-6"
-                        />
-                    )}
-                </Link>
-                <button
-                    onClick={() => setCollapsed(!collapsed)}
-                    className="hidden lg:flex p-1 rounded-md hover:bg-[var(--surface)] text-[var(--text-muted)] transition-colors"
-                >
-                    <FiChevronLeft
-                        size={16}
-                        className={`transition-transform ${collapsed ? "rotate-180" : ""}`}
-                    />
-                </button>
-            </div>
-
-            {/* Navigation */}
-            <nav className="flex-1 px-2 space-y-6 overflow-y-auto no-scrollbar pb-8">
-                {navGroups.map((group) => (
-                    <div key={group.title} className="space-y-1">
-                        {!collapsed && (
-                            <h3 className="px-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--text-muted)] mb-2">
-                                {group.title}
-                            </h3>
-                        )}
-                        <div className="space-y-1">
-                            {group.items.map((item) => (
-                                <Link
-                                    key={item.href}
-                                    href={item.href}
-                                    onClick={() => setMobileOpen(false)}
-                                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all ${isActive(item.href)
-                                        ? "bg-orange/10 text-orange font-medium"
-                                        : "text-[var(--text-secondary)] hover:bg-[var(--surface)] hover:text-[var(--text-primary)]"
-                                        }`}
-                                >
-                                    <item.icon size={18} className="flex-shrink-0" />
-                                    {!collapsed && <span>{item.label}</span>}
-                                </Link>
-                            ))}
-                        </div>
-                        {collapsed && group.title !== "Overview" && (
-                             <div className="h-[1px] bg-[var(--border-color)] mx-3 my-4 opacity-50" />
-                        )}
-                    </div>
-                ))}
-            </nav>
-
-            {/* Bottom Section */}
-            <div className="px-2 pb-4 space-y-1 border-t border-[var(--border-color)] pt-4">
-                {/* Sign Out */}
-                <button
-                    onClick={handleSignOut}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[var(--text-secondary)] hover:bg-red-500/10 hover:text-red-500 transition-all w-full"
-                >
-                    <FiLogOut size={18} className="flex-shrink-0" />
-                    {!collapsed && <span>Sign out</span>}
-                </button>
-
-                {/* Back to Website */}
-                <Link
-                    href="/"
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs text-[var(--text-muted)] hover:bg-[var(--surface)] hover:text-[var(--text-primary)] transition-all"
-                >
-                    <FiChevronLeft size={14} className="flex-shrink-0" />
-                    {!collapsed && <span>Back to website</span>}
-                </Link>
-            </div>
-        </div>
-    );
-
     return (
         <>
             {/* Mobile Toggle */}
             <button
                 onClick={() => setMobileOpen(!mobileOpen)}
-                className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-[var(--surface)] border border-[var(--border-color)] text-[var(--text-primary)]"
+                className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-[#5C1500] border border-[#FDF3E6]/25 text-[#FDF3E6] hover:bg-black/10 transition-all"
             >
                 {mobileOpen ? <FiX size={20} /> : <FiMenu size={20} />}
             </button>
@@ -178,10 +93,115 @@ export default function DashboardSidebar() {
 
             {/* Sidebar */}
             <aside
-                className={`fixed top-0 left-0 h-full bg-[var(--background)] border-r border-[var(--border-color)] z-40 transition-all duration-300 ${collapsed ? "w-[var(--sidebar-collapsed-width)]" : "w-[var(--sidebar-width)]"
-                    } ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
+                className={`fixed top-0 left-0 h-full bg-[#5C1500] border-r border-[#FDF3E6]/10 z-40 transition-all duration-300 ${
+                    collapsed ? "w-[var(--sidebar-collapsed-width)]" : "w-[var(--sidebar-width)]"
+                } ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
             >
-                <SidebarContent />
+                <div className="flex flex-col h-full bg-[#5C1500] text-[#FDF3E6]">
+                    {/* Logo / Notion-style Header */}
+                    <div className="p-4 mb-2 flex items-center justify-between border-b border-[#FDF3E6]/10">
+                        <Link href="/dashboard" className="flex items-center gap-3 p-1.5 rounded-xl hover:bg-white/5 transition-colors w-full group">
+                            <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center bg-white/10 border border-[#FDF3E6]/25">
+                                <Image
+                                    src="/brand_assets/icon_logo_white_svg.svg"
+                                    alt="Logo"
+                                    width={18}
+                                    height={18}
+                                />
+                            </div>
+                            {!collapsed && (
+                                <div className="text-left leading-none flex-1 truncate">
+                                    <p className="text-xs font-black text-white group-hover:text-orange transition-colors">
+                                        AndrewBrandr Studio
+                                    </p>
+                                    <p className="text-[9px] font-bold text-[#FDF3E6]/60 mt-0.5 uppercase tracking-wider">
+                                        Saviour Andrew's Workspace
+                                    </p>
+                                </div>
+                            )}
+                        </Link>
+                        <button
+                            onClick={() => setCollapsed(!collapsed)}
+                            className="hidden lg:flex p-1 rounded-md hover:bg-white/5 text-[#FDF3E6]/60 hover:text-white transition-colors ml-2"
+                        >
+                            <FiChevronLeft
+                                size={16}
+                                className={`transition-transform ${collapsed ? "rotate-180" : ""}`}
+                            />
+                        </button>
+                    </div>
+
+                    {/* Notion Top Quick Controls */}
+                    {!collapsed && (
+                        <div className="px-4 py-2 grid grid-cols-4 gap-1.5 border-b border-[#FDF3E6]/10 mb-4">
+                            <Link href="/dashboard" className="p-2 rounded-lg bg-white/10 hover:bg-white/15 text-white flex items-center justify-center transition-colors" title="Home">
+                                <FiGrid size={16} />
+                            </Link>
+                            <Link href="/dashboard/settings" className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-[#FDF3E6]/80 hover:text-white flex items-center justify-center transition-colors" title="Settings">
+                                <FiSettings size={16} />
+                            </Link>
+                            <Link href="/dashboard/communications" className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-[#FDF3E6]/80 hover:text-white flex items-center justify-center transition-colors" title="Messages">
+                                <FiMessageSquare size={16} />
+                            </Link>
+                            <button onClick={handleSignOut} className="p-2 rounded-lg bg-white/5 hover:bg-red-500/20 text-[#FDF3E6]/80 hover:text-red-300 flex items-center justify-center transition-colors" title="Sign Out">
+                                <FiLogOut size={16} />
+                            </button>
+                        </div>
+                    )}
+
+                    {/* Navigation */}
+                    <nav className="flex-1 px-3 space-y-6 overflow-y-auto no-scrollbar pb-8">
+                        {navGroups.map((group) => (
+                            <div key={group.title} className="space-y-1">
+                                {!collapsed && (
+                                    <h3 className="px-3 text-[9px] font-black uppercase tracking-[0.2em] text-[#FDF3E6]/50 mb-2">
+                                        {group.title}
+                                    </h3>
+                                )}
+                                <div className="space-y-0.5">
+                                    {group.items.map((item) => (
+                                        <Link
+                                            key={item.href}
+                                            href={item.href}
+                                            onClick={() => setMobileOpen(false)}
+                                            className={`flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition-all ${
+                                                isActive(item.href)
+                                                    ? "bg-white/15 text-white font-extrabold shadow-sm shadow-black/5 border border-white/10"
+                                                    : "text-[#FDF3E6]/70 hover:bg-white/5 hover:text-white font-medium"
+                                            }`}
+                                        >
+                                            <item.icon size={16} className={`flex-shrink-0 ${isActive(item.href) ? "text-orange" : "opacity-80"}`} />
+                                            {!collapsed && <span>{item.label}</span>}
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </nav>
+
+                    {/* Bottom Actions Block */}
+                    <div className="p-4 border-t border-[#FDF3E6]/10 space-y-2">
+                        {!collapsed && (
+                            <button 
+                                data-testid="new-engagement-btn"
+                                onClick={() => {
+                                    window.dispatchEvent(new CustomEvent("open-new-engagement-modal"));
+                                }}
+                                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-white text-[#5C1500] text-xs font-black hover:bg-orange hover:text-white transition-all shadow-md active:scale-95 cursor-pointer"
+                            >
+                                <span>+ Onboard Client</span>
+                            </button>
+                        )}
+
+                        <Link
+                            href="/"
+                            className="flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs text-[#FDF3E6]/60 hover:bg-white/5 hover:text-white transition-all"
+                        >
+                            <FiChevronLeft size={14} className="flex-shrink-0" />
+                            {!collapsed && <span>Back to public site</span>}
+                        </Link>
+                    </div>
+                </div>
             </aside>
         </>
     );

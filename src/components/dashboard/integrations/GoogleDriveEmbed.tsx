@@ -51,7 +51,7 @@ export default function GoogleDriveEmbed({ folderUrl, files = [] }: GoogleDriveE
                         <FiExternalLink size={14} className="text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-all" />
                     </a>
                 )) : (
-                    <div className="p-12 rounded-[2rem] bg-[var(--surface-elevated)]/30 border border-dashed border-[var(--border-color)] text-center">
+                    <div className="p-12 rounded-2xl bg-[var(--surface-elevated)]/30 border border-dashed border-[var(--border-color)] text-center">
                          <p className="text-xs font-bold text-[var(--text-muted)] uppercase">No assets linked yet</p>
                          <p className="text-xs text-[var(--text-muted)] mt-1">Waiting for studio asset synchronization</p>
                     </div>

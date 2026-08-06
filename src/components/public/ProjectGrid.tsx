@@ -56,15 +56,19 @@ export default function ProjectSlider() {
                                 animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 30 }}
                                 transition={{ duration: 0.6, delay: index * 0.15 }}
                             >
-                                <Link href={`/projects/${project.id}`} className="group block text-left">
+                                <Link href={`/projects/${project.slug || project.id}`} className="group block text-left">
                                     <div className="relative overflow-hidden rounded-xl aspect-[4/3] bg-gray-100 dark:bg-lil-black">
-                                        {project.image || (project as any).image ? (
-                                            <Image
-                                                src={project.image || (project as any).image}
-                                                alt={project.name}
-                                                fill
-                                                className="object-cover group-hover:scale-105 transition-transform duration-500"
-                                            />
+                                        {project.coverImage || (project as any).image ? (
+                                              <Image
+                                                  src={
+                                                      typeof (project.coverImage || (project as any).image) === 'string'
+                                                          ? (project.coverImage || (project as any).image)
+                                                          : ((project.coverImage as any)?.url || (project as any).image?.url || "")
+                                                  }
+                                                 alt={project.name}
+                                                 fill
+                                                 className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                             />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center text-gray-300">
                                                 <Image src="/brand_assets/icon_logo_BLACK.png" alt="placeholder" width={48} height={48} className="opacity-10" />
@@ -81,7 +85,7 @@ export default function ProjectSlider() {
                                             </p>
                                         </div>
                                         <div className="flex gap-2 flex-wrap justify-end">
-                                            {(project.category || []).slice(0, 2).map((cat: string) => (
+                                            {(project.services || (project as any).category || []).slice(0, 2).map((cat: string) => (
                                                 <span
                                                     key={cat}
                                                     className="text-[10px] uppercase font-bold tracking-widest px-2 py-1 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"

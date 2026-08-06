@@ -10,6 +10,7 @@ interface ProposalViewProps {
         scope: string[];
         investment: { label: string; amount: number }[];
         status: "pending" | "approved" | "rejected";
+        paymentStructure?: "once" | "twice";
     };
     isAdmin?: boolean;
     onApprove?: () => void;
@@ -74,6 +75,38 @@ export default function ProposalView({ data, isAdmin, onApprove }: ProposalViewP
                                 <span className="text-xl font-display text-orange">₦{item.amount.toLocaleString()}</span>
                             </div>
                         ))}
+                        
+                        {/* Payment Schedule Card */}
+                        <div className="p-6 rounded-2xl bg-[var(--surface-elevated)]/50 border border-[var(--border-color)] space-y-4">
+                            <h4 className="text-xs font-bold uppercase tracking-wider text-orange">Payment Terms</h4>
+                            {data.paymentStructure === "once" ? (
+                                <div className="space-y-2">
+                                    <div className="flex justify-between items-center text-sm font-bold text-[var(--text-primary)]">
+                                        <span>Full Upfront Payment (100%)</span>
+                                        <span>₦{data.investment.reduce((sum, item) => sum + item.amount, 0).toLocaleString()}</span>
+                                    </div>
+                                    <p className="text-xs text-[var(--text-muted)] font-medium">Due in full upon approval of proposal and signature of contract.</p>
+                                </div>
+                            ) : (
+                                <div className="space-y-4 divide-y divide-[var(--border-color)]">
+                                    <div className="space-y-1">
+                                        <div className="flex justify-between items-center text-sm font-bold text-[var(--text-primary)]">
+                                            <span>1. Deposit Payment (50%)</span>
+                                            <span>₦{(data.investment.reduce((sum, item) => sum + item.amount, 0) * 0.5).toLocaleString()}</span>
+                                        </div>
+                                        <p className="text-xs text-[var(--text-muted)] font-medium">Due upon proposal approval & contract signature to initiate creative strategy.</p>
+                                    </div>
+                                    <div className="space-y-1 pt-4">
+                                        <div className="flex justify-between items-center text-sm font-bold text-[var(--text-primary)]">
+                                            <span>2. Final Balance Payment (50%)</span>
+                                            <span>₦{(data.investment.reduce((sum, item) => sum + item.amount, 0) * 0.5).toLocaleString()}</span>
+                                        </div>
+                                        <p className="text-xs text-[var(--text-muted)] font-medium">Due prior to delivery of final exported assets during the Delivery stage.</p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
                         <div className="mt-8 p-8 rounded-3xl bg-black text-white flex items-center justify-between">
                             <div>
                                 <p className="text-[10px] font-bold uppercase tracking-widest opacity-60 mb-1">Total Investment</p>

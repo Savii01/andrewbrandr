@@ -18,7 +18,7 @@ export default function CommunicationsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-lil-black p-12 text-center"
+                className="rounded-[2rem] border border-[var(--border-color)] bg-[var(--surface-elevated)] p-12 text-center"
             >
                 <p className="text-[var(--text-muted)] text-sm mb-4">Communication hub coming soon</p>
                 <p className="text-xs text-[var(--text-muted)]">

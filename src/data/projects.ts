@@ -1,142 +1,324 @@
+import { CloudinaryImage } from "@/lib/types/portfolio";
+
+export type ProjectImage = string | CloudinaryImage;
+
 export interface Project {
-    id: number;
-    name: string;
-    client: string;
-    image: string;
-    images: string[];
-    category: string[];
-    description: string;
-    website: string;
-    behance: string;
-    year: number;
-    challenge?: string;
-    solution?: string;
-    testimonial?: {
-        author: string;
-        role: string;
-        content: string;
-    };
+  id: number;
+  slug: string;
+  name: string;
+  client: string;
+  industry: string;
+  year: number;
+  stage: "foundation" | "clarity" | "scale" | "enterprise";
+  coverImage: ProjectImage;
+  services: string[];
+
+  context: string;
+  problem: string;
+  strategy: string;
+  strategyImages?: ProjectImage[];
+  creativeDirection: string;
+  creativeDirectionImages?: ProjectImage[];
+  identitySystem: string;
+  identitySystemImages?: ProjectImage[];
+  outcome: string;
+
+  website?: string;
+  behance?: string;
+
+  testimonial?: {
+    author: string;
+    role: string;
+    content: string;
+  };
 }
 
 export const projects: Project[] = [
-    {
-        id: 1,
-        name: "Nexova",
-        client: "Nexova Technologies",
-        image: "/images/nexova/2.png",
-        images: ["/images/nexova/2.png", "/images/nexova/2.png", "/images/nexova/2.png", "/images/nexova/2.png", "/images/nexova/2.png"],
-        category: ["Brand Identity", "Social media"],
-        description:
-            "Nexova needed a bold new identity that could scale across digital and print platforms. We developed a modern, tech-inspired logo, a flexible brand system, and a vibrant social media design toolkit that elevated their presence and made them stand out in a competitive landscape.",
-        website: "https://nexova.io",
-        behance: "https://behance.net/nexova",
-        year: 2024,
-        challenge: "Nexova was expanding rapidly into global markets but struggled with a fragmented identity that felt outdated next to modern tech competitors. They needed a cohesive, high-performance brand system that communicated reliability and cutting-edge innovation.",
-        solution: "We redefined Nexova's visual language with a modular grid-based identity system. This included a bespoke type-driven logo, a high-contrast color palette, and a comprehensive set of digital assets designed for maximum scalability and impact across all touchpoints.",
-        testimonial: {
-            author: "Sarah Chen",
-            role: "CTO, Nexova",
-            content: "The transformation was immediate. Our new identity doesn't just look better; it has fundamentally changed how investors and enterprise clients perceive us. The level of detail and strategy behind the design is exceptional."
-        }
-    },
-    {
-        id: 2,
-        name: "PureSpace",
-        client: "PureSpace Interiors",
-        image: "/images/PureSpace/cover.png",
-        images: ["/images/PureSpace/cover.png", "/images/PureSpace/cover.png", "/images/PureSpace/cover.png", "/images/PureSpace/cover.png", "/images/PureSpace/cover.png"],
-        category: ["Brand Identity", "Social media", "Web Development"],
-        description:
-            "PureSpace, a clean living and eco-interior brand, came to us needing a full-stack brand solution. We created a calming, minimal identity, consistent social content, and a clean, responsive website that reflects their core values of simplicity and sustainability.",
-        website: "https://purespace.co",
-        behance: "https://behance.net/purespace",
-        year: 2023,
-        challenge: "PureSpace Interiors had beautiful projects but a brand that felt inconsistent and crowded. They needed to pivot towards a premium, minimal aesthetic that mirrored their clean-room and sustainable design philosophy.",
-        solution: "We stripped away the clutter, focusing on whitespace and a refined monochromatic palette. The result is a minimal yet warm identity that allows their interior work to take center stage, supported by a functional, content-heavy website.",
-        testimonial: {
-            author: "Michael Aris",
-            role: "Founder, PureSpace",
-            content: "They understood our vision of 'clean living' perfectly. The new branding has brought a sense of calm and clarity to our marketing that our clients genuinely appreciate."
-        }
-    },
-    {
-        id: 3,
-        name: "Glow",
-        client: "Glow Skincare",
-        image: "/images/Glow/cover.png",
-        images: ["/images/Glow/cover.png", "/images/Glow/cover.png", "/images/Glow/cover.png", "/images/Glow/cover.png", "/images/Glow/cover.png"],
-        category: ["Brand Identity", "Social media", "Web Development"],
-        description:
-            "Glow Skincare sought a complete brand refresh and ecommerce-ready website. We crafted a soft, feminine identity, built engaging content visuals, and developed a fast, mobile-optimized web experience with seamless shopping functionality.",
-        website: "https://glowskincare.co",
-        behance: "https://behance.net/glow",
-        year: 2024,
-        challenge: "Glow Skincare needed a complete brand refresh and ecommerce-ready website. We crafted a soft, feminine identity, built engaging content visuals, and developed a fast, mobile-optimized web experience with seamless shopping functionality.",
-        solution: "We stripped away the clutter, focusing on whitespace and a refined monochromatic palette. The result is a minimal yet warm identity that allows their interior work to take center stage, supported by a functional, content-heavy website.",
-        testimonial: {
-            author: "Michael Aris",
-            role: "Founder, Glow Skincare",
-            content: "They understood our vision of 'clean living' perfectly. The new branding has brought a sense of calm and clarity to our marketing that our clients genuinely appreciate."
-        }
-    },
-    {
-        id: 4,
-        name: "Nexera",
-        client: "Nexera Cloud Systems",
-        image: "/images/Nexera/cover.png",
-        images: ["/images/Nexera/cover.png", "/images/Nexera/cover.png", "/images/Nexera/cover.png", "/images/Nexera/cover.png", "/images/Nexera/cover.png"],
-        category: ["Brand Identity", "Web Development"],
-        description:
-            "For Nexera's SaaS product, we built a bold, scalable identity system and a powerful marketing website. The site is optimized for performance, conversion, and scalability, with custom CMS integration and conversion-optimized UX across devices.",
-        website: "https://nexera.dev",
-        behance: "https://behance.net/nexera",
-        year: 2023,
-        challenge: "Nexera was expanding rapidly into global markets but struggled with a fragmented identity that felt outdated next to modern tech competitors. They needed a cohesive, high-performance brand system that communicated reliability and cutting-edge innovation.",
-        solution: "We redefined Nexera's visual language with a modular grid-based identity system. This included a bespoke type-driven logo, a high-contrast color palette, and a comprehensive set of digital assets designed for maximum scalability and impact across all touchpoints.",
-        testimonial: {
-            author: "Sarah Chen",
-            role: "CTO, Nexera Cloud Systems",
-            content: "The transformation was immediate. Our new identity doesn't just look better; it has fundamentally changed how investors and enterprise clients perceive us. The level of detail and strategy behind the design is exceptional."
-        }
-    },
-    {
-        id: 5,
-        name: "LinkerPay",
-        client: "LinkerPay Inc.",
-        image: "/images/Linkerpay/cover.png",
-        images: ["/images/Linkerpay/cover.png", "/images/Linkerpay/cover.png", "/images/Linkerpay/cover.png", "/images/Linkerpay/cover.png", "/images/Linkerpay/cover.png"],
-        category: ["Brand Identity"],
-        description:
-            "LinkerPay needed a professional and secure brand identity for their digital payments platform. We created a clean, fintech-forward visual system, complete with a modern logo, color palette, and modular design assets suitable for onboarding, investor decks, and product visuals.",
-        website: "https://linkerpay.com",
-        behance: "https://behance.net/linkerpay",
-        year: 2022,
-        challenge: "Nexera was expanding rapidly into global markets but struggled with a fragmented identity that felt outdated next to modern tech competitors. They needed a cohesive, high-performance brand system that communicated reliability and cutting-edge innovation.",
-        solution: "We redefined Nexera's visual language with a modular grid-based identity system. This included a bespoke type-driven logo, a high-contrast color palette, and a comprehensive set of digital assets designed for maximum scalability and impact across all touchpoints.",
-        testimonial: {
-            author: "Sarah Chen",
-            role: "CTO, LinkerPay Inc.",
-            content: "The transformation was immediate. Our new identity doesn't just look better; it has fundamentally changed how investors and enterprise clients perceive us. The level of detail and strategy behind the design is exceptional."
-        }
-    },
-    {
-        id: 6,
-        name: "Ecocycle",
-        client: "Ecocycle Solutions",
-        image: "/images/Ecocycle/cover.png",
-        images: ["/images/Ecocycle/cover.png", "/images/Ecocycle/cover.png", "/images/Ecocycle/cover.png", "/images/Ecocycle/cover.png", "/images/Ecocycle/cover.png"],
-        category: ["Brand Identity", "Product Design"],
-        description:
-            "Ecocycle, a green-tech startup, challenged us with crafting a unique identity that speaks to both innovation and sustainability. We developed an eco-conscious brand system and detailed product packaging designs that communicate their mission at every customer touchpoint.",
-        website: "https://ecocycle.tech",
-        behance: "https://behance.net/ecocycle",
-        year: 2023,
-        challenge: "Nexera was expanding rapidly into global markets but struggled with a fragmented identity that felt outdated next to modern tech competitors. They needed a cohesive, high-performance brand system that communicated reliability and cutting-edge innovation.",
-        solution: "We redefined Nexera's visual language with a modular grid-based identity system. This included a bespoke type-driven logo, a high-contrast color palette, and a comprehensive set of digital assets designed for maximum scalability and impact across all touchpoints.",
-        testimonial: {
-            author: "Sarah Chen",
-            role: "CTO, Ecocycle Solutions",
-            content: "The transformation was immediate. Our new identity doesn't just look better; it has fundamentally changed how investors and enterprise clients perceive us. The level of detail and strategy behind the design is exceptional."
-        }
-    },
+  {
+    id: 1,
+    slug: "nexova",
+    name: "Nexova",
+    client: "Nexova Technologies",
+    industry: "SaaS / Cloud Technology",
+    year: 2024,
+    stage: "scale",
+    coverImage: "/images/nexova/2.png",
+    services: ["Brand Strategy", "Identity System", "Digital Assets"],
+
+    context:
+      "Nexova was preparing to expand into global markets. While the product was strong, the brand identity did not reflect the scale or credibility required for enterprise growth.",
+
+    problem:
+      "The existing brand felt fragmented and visually inconsistent. It lacked authority in comparison to modern SaaS competitors, creating friction in investor and enterprise conversations.",
+
+    strategy:
+      "We repositioned Nexova around structured innovation. The strategy clarified audience positioning, refined the messaging tone, and defined a competitive identity anchored in reliability and forward-thinking technology.",
+
+    creativeDirection:
+      "We explored modular, grid-based visual systems to reflect scalability. The selected direction focused on structured typography, high-contrast palettes, and a visual rhythm that communicated precision.",
+    creativeDirectionImages: [
+      "/images/nexova/2.png",
+      "/images/nexova/3.png"
+    ],
+
+    identitySystem:
+      "The identity system included a bespoke type-driven logo, sub-marks, scalable color hierarchy, structured layout grid, and digital asset toolkit for consistent cross-platform application.",
+    identitySystemImages: [
+      "/images/nexova/4.png",
+      "/images/nexova/5.png"
+    ],
+
+    outcome:
+      "The restructured brand system positioned Nexova confidently in investor discussions and enterprise onboarding. Perception shifted from early-stage startup to scalable technology platform.",
+
+    website: "https://nexova.io",
+    behance: "https://behance.net/nexova",
+
+    testimonial: {
+      author: "Sarah Chen",
+      role: "CTO, Nexova",
+      content:
+        "The transformation changed how we are perceived in high-level conversations. The structure behind the brand made all the difference."
+    }
+  },
+
+  {
+    id: 2,
+    slug: "purespace",
+    name: "PureSpace",
+    client: "PureSpace Interiors",
+    industry: "Interior Design",
+    year: 2023,
+    stage: "clarity",
+    coverImage: "/images/PureSpace/cover.png",
+    services: ["Brand Strategy", "Identity System", "Website"],
+
+    context:
+      "PureSpace Interiors had established a loyal client base but struggled with a brand identity that felt visually crowded and inconsistent across touchpoints.",
+
+    problem:
+      "The existing branding did not reflect the calm, premium aesthetic of their interior work. This disconnect created friction between brand perception and actual service quality.",
+
+    strategy:
+      "We repositioned PureSpace around clarity and minimalism. The strategy refined their audience positioning and anchored the brand around simplicity, space, and sustainability.",
+
+    creativeDirection:
+      "We selected a restrained, whitespace-driven visual direction with neutral tones and refined typography to mirror their clean-room philosophy.",
+    creativeDirectionImages: [
+      "/images/PureSpace/cover.png",
+      "/images/PureSpace/2.png"
+    ],
+
+    identitySystem:
+      "The identity system included a simplified wordmark, a soft monochromatic palette, structured layout rules, and a content-focused website designed to highlight project photography.",
+    identitySystemImages: [
+      "/images/PureSpace/3.png",
+      "/images/PureSpace/4.png"
+    ],
+
+    outcome:
+      "The restructured brand brought visual alignment between PureSpace's services and their public presence, strengthening client trust and perceived value.",
+
+    website: "https://purespace.co",
+    behance: "https://behance.net/purespace",
+
+    testimonial: {
+      author: "Michael Aris",
+      role: "Founder, PureSpace",
+      content:
+        "The new branding finally reflects the calm and clarity our interiors represent. Clients immediately noticed the shift."
+    }
+  },
+
+  {
+    id: 3,
+    slug: "glow",
+    name: "Glow",
+    client: "Glow Skincare",
+    industry: "Beauty & Wellness",
+    year: 2024,
+    stage: "clarity",
+    coverImage: "/images/Glow/cover.png",
+    services: ["Brand Strategy", "Identity System", "Ecommerce Website"],
+
+    context:
+      "Glow Skincare needed a brand refresh to support its shift toward a more premium, ecommerce-focused model.",
+
+    problem:
+      "The previous identity lacked cohesion and did not communicate the softness and credibility expected in the skincare market.",
+
+    strategy:
+      "We clarified Glow's positioning around softness, care, and premium accessibility. Messaging was refined to build emotional trust with its core audience.",
+
+    creativeDirection:
+      "We developed a feminine yet structured direction using soft gradients, elegant typography, and balanced visual rhythm.",
+    creativeDirectionImages: [
+      "/images/Glow/cover.png",
+      "/images/Glow/2.png"
+    ],
+
+    identitySystem:
+      "The system included a refined logo suite, a cohesive palette, product-focused layout structure, and a mobile-optimized ecommerce experience.",
+    identitySystemImages: [
+      "/images/Glow/3.png",
+      "/images/Glow/4.png"
+    ],
+
+    outcome:
+      "Glow's updated identity increased product trust perception and strengthened brand consistency across social and ecommerce platforms.",
+
+    website: "https://glowskincare.co",
+    behance: "https://behance.net/glow",
+
+    testimonial: {
+      author: "Founder, Glow Skincare",
+      role: "Founder",
+      content:
+        "The rebrand gave us confidence in how we present our products. It feels intentional and premium."
+    }
+  },
+
+  {
+    id: 4,
+    slug: "nexera",
+    name: "Nexera",
+    client: "Nexera Cloud Systems",
+    industry: "Cloud Infrastructure",
+    year: 2023,
+    stage: "scale",
+    coverImage: "/images/Nexera/cover.png",
+    services: ["Brand Strategy", "Identity System", "Marketing Website"],
+
+    context:
+      "Nexera was scaling its SaaS infrastructure and required a brand identity capable of competing in global cloud markets.",
+
+    problem:
+      "The brand lacked a cohesive system and did not visually align with enterprise-grade technology platforms.",
+
+    strategy:
+      "We repositioned Nexera around performance and reliability, clarifying messaging and refining audience segmentation.",
+
+    creativeDirection:
+      "A bold, grid-driven visual system was selected to communicate precision and technical strength.",
+    creativeDirectionImages: [
+      "/images/Nexera/cover.png",
+      "/images/Nexera/2.png"
+    ],
+
+    identitySystem:
+      "The identity system included a structured logo suite, scalable typography, modular digital assets, and a performance-optimized website.",
+    identitySystemImages: [
+      "/images/Nexera/3.png",
+      "/images/Nexera/4.png"
+    ],
+
+    outcome:
+      "Nexera launched into new markets with a cohesive brand presence that reinforced enterprise trust and scalability.",
+
+    website: "https://nexera.dev",
+    behance: "https://behance.net/nexera",
+
+    testimonial: {
+      author: "Sarah Chen",
+      role: "CTO, Nexera Cloud Systems",
+      content:
+        "The structured approach behind the rebrand gave us clarity and confidence in enterprise conversations."
+    }
+  },
+
+  {
+    id: 5,
+    slug: "linkerpay",
+    name: "LinkerPay",
+    client: "LinkerPay Inc.",
+    industry: "Fintech",
+    year: 2022,
+    stage: "foundation",
+    coverImage: "/images/Linkerpay/cover.png",
+    services: ["Brand Strategy", "Identity System"],
+
+    context:
+      "LinkerPay was launching its fintech platform and required a professional identity to establish early credibility.",
+
+    problem:
+      "Without a structured brand foundation, the platform risked appearing untrustworthy in a highly regulated industry.",
+
+    strategy:
+      "We defined a positioning centered on security, clarity, and technological reliability to build trust from launch.",
+
+    creativeDirection:
+      "A clean fintech-forward aesthetic was selected, focusing on modern typography and structured layout principles.",
+    creativeDirectionImages: [
+      "/images/Linkerpay/cover.png",
+      "/images/Linkerpay/2.png"
+    ],
+
+    identitySystem:
+      "The identity included a precise logo suite, controlled color system, and scalable assets for onboarding, pitch decks, and product visuals.",
+    identitySystemImages: [
+      "/images/Linkerpay/3.png",
+      "/images/Linkerpay/4.png"
+    ],
+
+    outcome:
+      "LinkerPay entered the market with a confident and professional presence, reinforcing credibility among early adopters.",
+
+    website: "https://linkerpay.com",
+    behance: "https://behance.net/linkerpay",
+
+    testimonial: {
+      author: "Sarah Chen",
+      role: "CTO, LinkerPay Inc.",
+      content:
+        "The clarity of the brand helped us communicate security and professionalism from day one."
+    }
+  },
+
+  {
+    id: 6,
+    slug: "ecocycle",
+    name: "Ecocycle",
+    client: "Ecocycle Solutions",
+    industry: "Green Technology",
+    year: 2023,
+    stage: "clarity",
+    coverImage: "/images/Ecocycle/cover.png",
+    services: ["Brand Strategy", "Identity System", "Packaging Design"],
+
+    context:
+      "Ecocycle, a green-tech startup, needed a cohesive brand identity that balanced innovation with sustainability.",
+
+    problem:
+      "The brand lacked clarity in communicating both environmental responsibility and technical innovation.",
+
+    strategy:
+      "We clarified positioning around eco-conscious technology and defined messaging to connect with environmentally aware consumers.",
+
+    creativeDirection:
+      "A structured yet organic visual direction was selected, blending clean typography with sustainable visual cues.",
+    creativeDirectionImages: [
+      "/images/Ecocycle/cover.png",
+      "/images/Ecocycle/2.png"
+    ],
+
+    identitySystem:
+      "The identity system included a scalable logo suite, eco-forward palette, packaging layouts, and structured visual hierarchy.",
+    identitySystemImages: [
+      "/images/Ecocycle/3.png",
+      "/images/Ecocycle/4.png"
+    ],
+
+    outcome:
+      "Ecocycle launched with a clear and cohesive brand system that strengthened perception in sustainability-focused markets.",
+
+    website: "https://ecocycle.tech",
+    behance: "https://behance.net/ecocycle",
+
+    testimonial: {
+      author: "Founder, Ecocycle Solutions",
+      role: "Founder",
+      content:
+        "The rebrand clarified our mission and gave our sustainability message the structure it needed."
+    }
+  }
 ];

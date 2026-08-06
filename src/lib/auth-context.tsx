@@ -13,6 +13,8 @@ import {
     signInWithEmailAndPassword,
     createUserWithEmailAndPassword,
     signOut as firebaseSignOut,
+    GoogleAuthProvider,
+    signInWithPopup,
 } from "firebase/auth";
 import { auth } from "@/lib/firebase/config";
 
@@ -22,6 +24,7 @@ interface AuthContextType {
     signIn: (email: string, password: string) => Promise<void>;
     signUp: (email: string, password: string) => Promise<void>;
     signOut: () => Promise<void>;
+    signInWithGoogle: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -30,6 +33,7 @@ const AuthContext = createContext<AuthContextType>({
     signIn: async () => { },
     signUp: async () => { },
     signOut: async () => { },
+    signInWithGoogle: async () => { },
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -37,16 +41,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // 1. Check for persistent Admin session first
-        const adminSession = localStorage.getItem('admin_session');
-        if (adminSession) {
-            try {
-                const session = JSON.parse(adminSession);
-                setUser(session);
-                setLoading(false);
-            } catch (e) {
-                localStorage.removeItem('admin_session');
-            }
+        // Clear any stale legacy admin sessions if present to prevent unauthenticated bypass
+        if (typeof window !== 'undefined') {
+            localStorage.removeItem('admin_session');
         }
 
         if (!auth) {
@@ -55,12 +52,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
 
         const unsubscribe = onAuthStateChanged(auth, (user) => {
-            // Only overwrite if we don't have an admin session
-            const hasAdmin = localStorage.getItem('admin_session');
-            if (user || !hasAdmin) {
-                setUser(user);
-                setLoading(false);
-            }
+            setUser(user);
+            setLoading(false);
         });
         return unsubscribe;
     }, []);
@@ -75,30 +68,104 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             });
 
             if (res.ok) {
-                const adminUser = { email, uid: 'admin-master' };
-                setUser(adminUser as any);
-                localStorage.setItem('admin_session', JSON.stringify(adminUser));
+                // Admin credentials confirmed — authenticate with Firebase Auth
+                // so Firestore gets a real authenticated session
+                try {
+                    await signInWithEmailAndPassword(auth, email, password);
+                } catch (firebaseError: any) {
+                    console.error("Firebase Auth sign in failed for admin:", firebaseError);
+
+                    if (firebaseError?.code === 'auth/network-request-failed') {
+                        throw new Error(
+                            "Network connection error: Firebase servers are unreachable. " +
+                            "If you are in a restricted network or your ISP blocks Firestore/Firebase, " +
+                            "please connect to a VPN or switch internet connections to access the workspace."
+                        );
+                    }
+
+                    // If user doesn't exist in Firebase Auth yet, try to create them
+                    if (
+                        firebaseError?.code === 'auth/user-not-found' ||
+                        firebaseError?.code === 'auth/invalid-credential'
+                    ) {
+                        try {
+                            await createUserWithEmailAndPassword(auth, email, password);
+                        } catch (createError: any) {
+                            console.error("Firebase Auth create user failed for admin:", createError);
+                            
+                            if (createError?.code === 'auth/email-already-in-use') {
+                                throw new Error(
+                                    "Firebase Authentication Mismatch: The email is already registered in Firebase, " +
+                                    "but the password does not match the ADMIN_PASSWORD in your .env.local. " +
+                                    "Please reset/change the password for " + email + " in your Firebase Console to " +
+                                    "match the one in your .env.local (currently 'Savii123'), or update ADMIN_PASSWORD " +
+                                    "in your .env.local to match your Firebase user password and restart the dev server."
+                                );
+                            }
+                            
+                            if (createError?.code === 'auth/network-request-failed') {
+                                throw new Error(
+                                    "Network connection error: Firebase servers are unreachable. " +
+                                    "Please connect to a VPN or switch internet connections to access the workspace."
+                                );
+                            }
+
+                            throw new Error(`Firebase Auth User Creation Failed: ${createError?.message || createError}`);
+                        }
+                    } else {
+                        throw new Error(`Firebase Auth Sign In Failed: ${firebaseError?.message || firebaseError}`);
+                    }
+                }
                 return;
+            } else {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.message || "Invalid credentials. Please verify your admin access.");
             }
-        } catch (e) {
-            console.error("Admin check failed, falling back to Firebase", e);
+        } catch (e: any) {
+            // If the error was thrown by our inner blocks, propagate it
+            if (e instanceof Error && (
+                e.message.includes("Firebase") || 
+                e.message.includes("Network connection error") || 
+                e.message.includes("Invalid credentials")
+            )) {
+                throw e;
+            }
+            console.error("Admin check failed, falling back to standard Firebase login:", e);
         }
 
         // 2. Fallback to standard Firebase login
-        await signInWithEmailAndPassword(auth, email, password);
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+        } catch (firebaseError: any) {
+            if (firebaseError?.code === 'auth/network-request-failed') {
+                throw new Error(
+                    "Network connection error: Firebase servers are unreachable. " +
+                    "Please connect to a VPN or switch internet connections to access the workspace."
+                );
+            }
+            throw firebaseError;
+        }
     };
 
     const signUp = async (email: string, password: string) => {
         await createUserWithEmailAndPassword(auth, email, password);
     };
 
+    const signInWithGoogle = async () => {
+        if (!auth) return;
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+    };
+
     const signOut = async () => {
-        localStorage.removeItem('admin_session');
+        if (typeof window !== 'undefined') {
+            localStorage.removeItem('admin_session');
+        }
         await firebaseSignOut(auth);
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut }}>
+        <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, signInWithGoogle }}>
             {children}
         </AuthContext.Provider>
     );

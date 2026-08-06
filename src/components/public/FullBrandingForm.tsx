@@ -33,7 +33,12 @@ Business Goals: ${formData.businessGoals}`;
     setWhatsappMessage(message);
 
     emailjs
-      .send("service_p8qel8i", "template_fullbranding", formData, "Y21i1oUIg68Guej_s")
+      .send(
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
+        process.env.NEXT_PUBLIC_EMAILJS_FULLBRANDING_TEMPLATE_ID!,
+        formData,
+        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!
+      )
       .then(() => {
         setIsSubmitted(true);
         setShowAlert(true);

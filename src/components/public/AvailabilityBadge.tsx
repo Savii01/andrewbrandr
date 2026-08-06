@@ -14,23 +14,35 @@ export default function AvailabilityBadge() {
             setLoading(false);
             return;
         }
-        const docRef = doc(db, "settings", "availability");
-        const unsub = onSnapshot(docRef, (docSnap) => {
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                setStatus(data.status || "available");
-                setSlots(typeof data.slots === "number" ? data.slots : 0);
-            } else {
-                setStatus("available");
-                setSlots(0);
-            }
-            setLoading(false);
-        }, (error) => {
-            console.error("Error fetching availability:", error);
-            setLoading(false);
-        });
+        let active = true;
+        let unsub: (() => void) | undefined;
 
-        return () => unsub();
+        const timer = setTimeout(() => {
+            if (!active) return;
+            const docRef = doc(db, "settings", "availability");
+            unsub = onSnapshot(docRef, (docSnap) => {
+                if (!active) return;
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    setStatus(data.status || "available");
+                    setSlots(typeof data.slots === "number" ? data.slots : 0);
+                } else {
+                    setStatus("available");
+                    setSlots(0);
+                }
+                setLoading(false);
+            }, (error) => {
+                if (!active) return;
+                console.error("Error fetching availability:", error);
+                setLoading(false);
+            });
+        }, 0);
+
+        return () => {
+            active = false;
+            clearTimeout(timer);
+            if (unsub) unsub();
+        };
     }, []);
 
     if (loading) {

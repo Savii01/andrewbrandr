@@ -118,8 +118,8 @@ export default function ProjectSlider() {
 
                 return (
                   <Link 
-                    key={`${project.id}-${i}`} 
-                    href={`/projects/${project.id}`} 
+                    key={`${project.slug}-${i}`} 
+                    href={`/projects/${project.slug}`} 
                     className="flex-shrink-0 group"
                     style={{ width: `${cardWidth}px` }}
                   >
@@ -130,7 +130,7 @@ export default function ProjectSlider() {
                       onMouseLeave={() => setHoveredId(null)}
                     >
                       <Image
-                        src={project.image}
+                        src={typeof project.coverImage === 'string' ? project.coverImage : ((project.coverImage as any)?.url || '')}
                         alt={project.name}
                         fill
                         className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -140,16 +140,16 @@ export default function ProjectSlider() {
                       <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: isHovered ? 1 : 0 }}
-                        className="absolute inset-0 bg-gradient-to-tl from-[#5C1500]/90 via-[#0f0000]/80 to-transparent backdrop-blur-[2px] z-10 flex flex-col justify-end p-8 sm:p-10 rounded-3xl text-left pointer-events-none"
+                        className="absolute inset-0 bg-[#0f0000]/90 backdrop-blur-[2px] z-10 flex flex-col justify-end p-8 sm:p-10 rounded-3xl text-left pointer-events-none"
                       >
                         <h3 className="text-[#FDF3E6] text-2xl sm:text-3xl font-extrabold mb-2 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                           {project.name}
                         </h3>
                         <p className="text-[#FDF3E6] text-xs sm:text-sm mb-6 line-clamp-3 translate-y-4 group-hover:translate-y-0 transition-transform duration-500 font-bold delay-75">
-                          {project.description}
+                          {project.context}
                         </p>
                         <div className="flex flex-wrap gap-2 translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-150">
-                          {project.category.map((cat) => (
+                          {project.services.map((cat) => (
                             <span
                               key={cat}
                               className="text-[#0f0000] text-[10px] sm:text-[11px] font-bold px-3 py-1.5 border border-[#0f0000] rounded-md bg-[#FDF3E6]"
@@ -182,12 +182,10 @@ export default function ProjectSlider() {
 
             {/* ── Fading Edges (Desktop Only) ── */}
             <div
-              className="absolute inset-y-0 left-0 w-12 md:w-24 z-20 pointer-events-none hidden md:block"
-              style={{ background: 'linear-gradient(to right, #FDF3E6 0%, transparent 100%)' }}
+              className="absolute inset-y-0 left-0 w-12 md:w-24 z-20 pointer-events-none hidden md:block bg-[#FDF3E6]/10"
             />
             <div
-              className="absolute inset-y-0 right-0 w-12 md:w-24 z-20 pointer-events-none hidden md:block"
-              style={{ background: 'linear-gradient(to left, #FDF3E6 0%, transparent 100%)' }}
+              className="absolute inset-y-0 right-0 w-12 md:w-24 z-20 pointer-events-none hidden md:block bg-[#FDF3E6]/10"
             />
 
             {/* ── Navigation Arrows ── */}

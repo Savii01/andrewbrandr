@@ -5,6 +5,8 @@ import Image from "next/image";
 import { socialLinks } from "@/data";
 import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaBehance } from "react-icons/fa";
 
+import { getSiteContent } from "@/lib/firebase/cms";
+
 const iconMap: Record<string, any> = {
     FaFacebook: FaFacebook,
     FaLinkedin: FaLinkedin,
@@ -14,6 +16,32 @@ const iconMap: Record<string, any> = {
 };
 
 const Footer = () => {
+  const [footerData, setFooterData] = React.useState<any>(null);
+
+  React.useEffect(() => {
+    async function loadFooter() {
+      const content = await getSiteContent();
+      if (content?.footer) {
+        setFooterData(content.footer);
+      }
+    }
+    loadFooter();
+  }, []);
+
+  const tagline = footerData?.tagline || "I design systems that connect clarity\n with Creativity.";
+  const links = footerData?.links || [
+    { label: "About", href: "/#about" },
+    { label: "Process", href: "/#process" },
+    { label: "Projects", href: "/projects" },
+    { label: "Contact", href: "/send-message" }
+  ];
+  const policyLinks = footerData?.policyLinks || [
+    { label: "Terms", href: "/terms" },
+    { label: "Policy", href: "/policy" },
+    { label: "Refund", href: "/refund" },
+    { label: "Stages", href: "/#stages" }
+  ];
+
   return (
     <footer className="bg-[#0F0000] text-[#fdf3e6] py-10">
       <div className="container mx-auto px-6 md:px-12 lg:px-20">
@@ -23,16 +51,14 @@ const Footer = () => {
           <div className="flex flex-col gap-y-4 justify-start items-start order-2 md:order-1 mt-10 md:mt-0">
 
           <div className="flex flex-wrap lg:justify-center gap-4 mt-6 md:mt-0">
-            <a href="/about" className="text-white/70 hover:text-orange font-semibold transition">About</a>
-            <a href="/#process" className="text-white/70 hover:text-orange font-semibold transition">Process</a>
-            <a href="/projects" className="text-white/70 hover:text-orange font-semibold transition">Projects</a>
-            <a href="/send-message" className="text-white/70 hover:text-orange font-semibold transition">Contact</a>
+            {links.map((link: any, idx: number) => (
+              <a key={idx} href={link.href} className="text-white/70 hover:text-orange font-semibold transition">{link.label}</a>
+            ))}
           </div>
           <div className="flex flex-wrap lg:justify-center gap-6 mt-2 md:mt-0">
-            <a href="/terms" className="text-white/70 hover:text-orange transition">Terms</a>
-            <a href="/policy" className="text-white/70 hover:text-orange transition">Policy</a>
-            <a href="/refund" className="text-white/70 hover:text-orange transition">Refund</a>
-            <a href="/#stages" className="text-white/70 hover:text-orange transition">Stages</a>
+            {policyLinks.map((link: any, idx: number) => (
+              <a key={idx} href={link.href} className="text-white/70 hover:text-orange transition">{link.label}</a>
+            ))}
           </div>
           </div>
 
@@ -48,8 +74,8 @@ const Footer = () => {
                     />
                 </div>
             </div>
-            <p className="text-white/60 mt-2 text-[16px] md:text-[16px] text-left">
-                I design systems that connect clarity<br/>  with Creativity.
+            <p className="text-white/60 mt-2 text-[16px] md:text-[16px] text-left whitespace-pre-line">
+                {tagline}
             </p>
           </div>      
 
@@ -57,6 +83,7 @@ const Footer = () => {
           <div className="flex gap-4 mt-6 md:mt-0 order-3">
             {socialLinks.map((link, i) => {
                 const Icon = iconMap[link.icon];
+                if (!Icon) return null;
                 return (
                     <a 
                         key={i}

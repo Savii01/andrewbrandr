@@ -27,7 +27,11 @@ export default function EngagementsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {engagements.map((eng) => {
                 const progress = getMacroProgress(eng);
-                const currentStageConfig = STAGE_CONFIG[eng.stagePrimary];
+                const currentStageConfig = STAGE_CONFIG[eng.stagePrimary] || {
+                    label: "Unknown Stage",
+                    icon: FiBriefcase,
+                    description: "No description available.",
+                };
                 
                 return (
                     <motion.div
@@ -103,7 +107,11 @@ export default function EngagementsPage() {
                             <div className="space-y-4 bg-[var(--surface-elevated)]/20 p-4 rounded-[2.5rem] min-h-[600px] border border-[var(--border-color)]">
                                 {groupEngagements.map((eng) => {
                                     const progress = getMacroProgress(eng);
-                                    const currentStageConfig = STAGE_CONFIG[eng.stagePrimary];
+                                    const currentStageConfig = STAGE_CONFIG[eng.stagePrimary] || {
+                                        label: "Unknown Stage",
+                                        icon: FiBriefcase,
+                                        description: "No description available.",
+                                    };
 
                                     return (
                                         <motion.div
@@ -190,8 +198,8 @@ export default function EngagementsPage() {
                     </div>
 
                     <button
-                        onClick={() => setIsModalOpen(true)}
-                        className="flex items-center gap-2 px-6 py-3 bg-orange text-white text-sm font-bold rounded-xl hover:bg-black transition-all shadow-xl shadow-orange/10"
+                        onClick={() => window.dispatchEvent(new CustomEvent("open-new-engagement-modal"))}
+                        className="flex items-center gap-2 px-6 py-3 bg-orange text-white text-sm font-bold rounded-xl hover:bg-black transition-all shadow-xl shadow-orange/10 cursor-pointer"
                     >
                         <FiPlus size={18} />
                         Initiate Project

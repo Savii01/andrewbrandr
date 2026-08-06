@@ -38,6 +38,10 @@ export default function ClientPortalPage() {
     );
 
     const progress = getMacroProgress(engagement);
+    const activeStageConfig = STAGE_CONFIG[engagement.stagePrimary] || {
+        label: "Unknown Stage",
+        description: "No details available.",
+    };
 
     return (
         <div className="min-h-screen bg-[#FDF3E6]">
@@ -109,13 +113,13 @@ export default function ClientPortalPage() {
                             <div className="flex items-center gap-3 mb-6">
                                 <span className="px-4 py-1.5 rounded-full bg-orange text-white text-xs font-black uppercase">ACTIVE PHASE</span>
                                 <span className="text-white/20 font-black">/</span>
-                                <span className="text-white/40 text-xs font-black uppercase">{STAGE_CONFIG[engagement.stagePrimary].label}</span>
+                                <span className="text-white/40 text-xs font-black uppercase">{activeStageConfig.label}</span>
                             </div>
                             <h1 className="text-3xl md:text-5xl font-black font-display mb-6 leading-tight">
-                                The studio is currently focused on <span className="text-orange underline decoration-orange/30 underline-offset-8">{STAGE_CONFIG[engagement.stagePrimary].label}</span>
+                                The studio is currently focused on <span className="text-orange underline decoration-orange/30 underline-offset-8">{activeStageConfig.label}</span>
                             </h1>
                             <p className="text-white/50 text-lg max-w-xl leading-relaxed font-bold">
-                                {STAGE_CONFIG[engagement.stagePrimary].description}
+                                {activeStageConfig.description}
                             </p>
                         </div>
                         <div className="relative z-10 shrink-0">

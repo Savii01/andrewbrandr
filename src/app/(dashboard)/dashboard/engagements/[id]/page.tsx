@@ -85,9 +85,9 @@ export default function EngagementDetailPage() {
     };
 
     return (
-        <div className="fixed inset-0 bg-[var(--background)] z-[60] flex overflow-hidden">
+        <div className="flex flex-col lg:flex-row gap-4 w-full">
             {/* Nested Stage Sidebar */}
-            <aside className="w-64 h-full border-r border-[var(--border-color)]">
+            <aside className="w-full lg:w-64 lg:flex-shrink-0">
                 <StageNavigation 
                     engagement={engagement} 
                     activeStage={activeStage}
@@ -96,9 +96,9 @@ export default function EngagementDetailPage() {
             </aside>
 
             {/* Main Workspace */}
-            <main className="flex-1 h-full flex flex-col overflow-hidden bg-[var(--background)]">
+            <div className="flex-1 space-y-4 min-w-0">
                 {/* Workspace Header */}
-                <header className="h-20 border-b border-[var(--border-color)] bg-[var(--surface)]/80 backdrop-blur-md px-8 flex items-center justify-between z-10">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-4 border-b border-[var(--border-color)]">
                     <div className="flex items-center gap-6">
                         <button 
                             onClick={() => router.push("/dashboard/engagements")}
@@ -116,7 +116,7 @@ export default function EngagementDetailPage() {
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-wrap items-center gap-4">
                         <div className="flex items-center gap-3 px-4 py-2 bg-[var(--surface-elevated)] border border-[var(--border-color)] rounded-xl">
                             <div>
                                 <p className="text-xs font-bold text-[var(--text-muted)]">Active Session</p>
@@ -151,45 +151,45 @@ export default function EngagementDetailPage() {
                             </div>
                         </div>
 
-                        <div className="h-10 w-[1px] bg-[var(--border-color)] mx-2" />
+                        <div className="h-10 w-[1px] bg-[var(--border-color)] hidden md:block mx-1" />
 
-                        <button 
-                            onClick={handleCopyPortal}
-                            className={`p-3 rounded-xl border border-[var(--border-color)] transition-all ${copied ? 'bg-green/10 text-green border-green' : 'hover:bg-[var(--surface-elevated)] text-[var(--text-muted)]'}`}
-                            title="Copy Portal Link"
-                        >
-                            {copied ? <FiCheck size={16} /> : <FiLink size={16} />}
-                        </button>
-                        <button className="p-3 rounded-xl border border-[var(--border-color)] hover:bg-[var(--surface-elevated)] text-[var(--text-muted)] transition-all">
-                            <FiShare2 size={16} />
-                        </button>
-                        <button className="p-3 rounded-xl border border-[var(--border-color)] hover:bg-[var(--surface-elevated)] text-[var(--text-muted)] transition-all">
-                            <FiMoreVertical size={16} />
-                        </button>
-                        <button 
-                            className="flex items-center gap-2 px-6 py-3 bg-[var(--text-primary)] text-white text-xs font-bold rounded-xl hover:bg-orange transition-all"
-                        >
-                            Client View
-                            <FiExternalLink size={14} />
-                        </button>
+                        <div className="flex items-center gap-2">
+                            <button 
+                                onClick={handleCopyPortal}
+                                className={`p-3 rounded-xl border border-[var(--border-color)] transition-all ${copied ? 'bg-green/10 text-green border-green' : 'hover:bg-[var(--surface-elevated)] text-[var(--text-muted)]'}`}
+                                title="Copy Portal Link"
+                            >
+                                {copied ? <FiCheck size={16} /> : <FiLink size={16} />}
+                            </button>
+                            <button className="p-3 rounded-xl border border-[var(--border-color)] hover:bg-[var(--surface-elevated)] text-[var(--text-muted)] transition-all">
+                                <FiShare2 size={16} />
+                            </button>
+                            <button 
+                                onClick={handleCopyPortal}
+                                className="flex items-center gap-2 px-6 py-3 bg-[var(--text-primary)] text-white text-xs font-bold rounded-xl hover:bg-orange transition-all font-bold"
+                            >
+                                Portal Link
+                                <FiExternalLink size={14} />
+                            </button>
+                        </div>
                     </div>
-                </header>
+                </div>
 
                 {/* Content Area */}
-                <div className="flex-1 overflow-y-auto no-scrollbar pb-24">
+                <div className="pb-24">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={activeStage}
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                            transition={{ duration: 0.3 }}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.2 }}
                         >
                             <StageView engagement={engagement} stageKey={activeStage} />
                         </motion.div>
                     </AnimatePresence>
                 </div>
-            </main>
+            </div>
 
             {/* Dependency Warning Modal */}
             <StageDependencyWarning 

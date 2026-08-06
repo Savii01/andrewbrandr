@@ -114,10 +114,21 @@ export default function QualificationForm({ slug, stage, onSubmit }: Qualificati
   const [formDataState, setFormDataState] = useState<Record<string, any>>({});
   const [selectedChips, setSelectedChips] = useState<string[]>([]);
   const [selectedChecks, setSelectedChecks] = useState<string[]>([]);
+  const [emailError, setEmailError] = useState("");
+
+  const validateEmail = (email: string) => {
+    const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return re.test(String(email).toLowerCase());
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (step === 1) {
+      if (!validateEmail(formDataState.email || "")) {
+        setEmailError("Please enter a valid email address.");
+        return;
+      }
+      setEmailError("");
       setStep(2);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
@@ -141,7 +152,17 @@ export default function QualificationForm({ slug, stage, onSubmit }: Qualificati
     }
   };
 
-  const currentFields = step === 1 ? basicFields : stageData.fields;
+  const currentFields = step === 1 
+    ? [
+        ...basicFields,
+        ...(formDataState.comm_pref === "WhatsApp" 
+          ? [{ id: "whatsapp", label: "WhatsApp Number (with Country Code)", type: "text" as const, placeholder: "e.g. +2348012636013" }]
+          : []),
+        ...(formDataState.comm_pref === "Telegram" 
+          ? [{ id: "telegram", label: "Telegram Username", type: "text" as const, placeholder: "e.g. @yourusername" }]
+          : [])
+      ]
+    : stageData.fields;
 
   return (
     <div className="py-10">
@@ -209,14 +230,35 @@ export default function QualificationForm({ slug, stage, onSubmit }: Qualificati
                   )}
 
                   {field.type === "email" && (
-                    <input
-                      required
-                      type="email"
-                      placeholder="e.g. you@example.com"
-                      value={formDataState[field.id] || ""}
-                      className="w-full bg-[#FDF3E6] border-2 border-[#0F0000] rounded-2xl px-6 py-4 text-[#0F0000] font-bold outline-none focus:ring-2 focus:ring-[#CC3300] transition-all"
-                      onChange={(e) => setFormDataState({ ...formDataState, [field.id]: e.target.value })}
-                    />
+                    <div className="w-full space-y-2">
+                      <input
+                        required
+                        type="email"
+                        placeholder="e.g. you@example.com"
+                        value={formDataState[field.id] || ""}
+                        className={`w-full bg-[#FDF3E6] border-2 ${
+                          emailError 
+                            ? "border-red-500 focus:ring-red-500" 
+                            : "border-[#0F0000] focus:ring-[#CC3300]"
+                        } rounded-2xl px-6 py-4 text-[#0F0000] font-bold outline-none focus:ring-2 transition-all`}
+                        onChange={(e) => {
+                          setFormDataState({ ...formDataState, [field.id]: e.target.value });
+                          if (emailError && validateEmail(e.target.value)) {
+                            setEmailError("");
+                          }
+                        }}
+                        onBlur={(e) => {
+                          if (e.target.value && !validateEmail(e.target.value)) {
+                            setEmailError("Please enter a valid email address.");
+                          } else {
+                            setEmailError("");
+                          }
+                        }}
+                      />
+                      {emailError && (
+                        <p className="text-red-500 text-sm font-bold pl-2">{emailError}</p>
+                      )}
+                    </div>
                   )}
 
                   {field.type === "textarea" && (
@@ -235,7 +277,20 @@ export default function QualificationForm({ slug, stage, onSubmit }: Qualificati
                         <button
                           key={opt}
                           type="button"
-                          onClick={() => setFormDataState({ ...formDataState, [field.id]: opt })}
+                          onClick={() => {
+                            const updates: Record<string, any> = { [field.id]: opt };
+                            if (field.id === "comm_pref") {
+                              if (opt === "Email") {
+                                updates.whatsapp = "";
+                                updates.telegram = "";
+                              } else if (opt === "WhatsApp") {
+                                updates.telegram = "";
+                              } else if (opt === "Telegram") {
+                                updates.whatsapp = "";
+                              }
+                            }
+                            setFormDataState({ ...formDataState, ...updates });
+                          }}
                           className={`px-6 py-4 rounded-xl border-2 font-bold transition-all text-left ${
                             formDataState[field.id] === opt 
                             ? "bg-[#0F0000] border-[#0F0000] text-white" 

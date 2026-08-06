@@ -4,7 +4,14 @@ import React, { useRef } from "react";
 import Button from "./Button";
 import { MdArrowOutward } from "react-icons/md";
 
-const steps = [
+interface ProcessStep {
+  num: string;
+  title: string;
+  desc: string;
+  bgColor: string;
+}
+
+const defaultSteps: ProcessStep[] = [
   {
     num: "01",
     title: "Discovery",
@@ -37,8 +44,32 @@ const steps = [
   },
 ];
 
-export default function Processes() {
+interface ProcessesProps {
+  cmsData?: {
+    heading: string;
+    description: string;
+    steps?: {
+      title: string;
+      description: string;
+    }[];
+  };
+}
+
+export default function Processes({ cmsData }: ProcessesProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Map cmsData steps dynamically if available, maintaining alternating background colors
+  const steps: ProcessStep[] = cmsData?.steps && cmsData.steps.length > 0
+    ? cmsData.steps.map((step, index) => ({
+        num: String(index + 1).padStart(2, "0"),
+        title: step.title,
+        desc: step.description,
+        bgColor: index % 2 === 0 ? "bg-[#0f0f0f]" : "bg-[#cc3300]"
+      }))
+    : defaultSteps;
+
+  const heading = cmsData?.heading || "Every project follows a clear structure.";
+  const description = cmsData?.description || "Not because structure is rigid, but because clarity needs it.";
 
   return (
     <section id="process" className="bg-[#0F0000] text-[#fdf3e6] pt-24 pb-48 px-4 relative">
@@ -50,10 +81,10 @@ export default function Processes() {
             How the process works
           </p>
           <h2 className="text-[28px] sm:text-[28px] text-[#fdf3e6] md:text-[30px] font-bold tracking-tight mb-2">
-            Every project follows a clear structure.
+            {heading}
           </h2>
           <p className="text-[#fdf3e6]/70 text-[16px] sm:text-[18px] md:text-[18px] font-medium">
-            Not because structure is rigid, but because clarity needs it.
+            {description}
           </p>
         </div>
 
@@ -118,4 +149,4 @@ export default function Processes() {
       </div>
     </section>
   );
-}
+}

@@ -4,12 +4,82 @@
 
 /* ─── Font Faces ─── */
 @font-face {
-  font-family: "Cabinet Grotesk";
-  src: url("/fonts/CabinetGrotesk-Variable.woff2") format("woff2-variations"),
-    url("/fonts/CabinetGrotesk-Variable.woff") format("woff"),
-    url("/fonts/CabinetGrotesk-Variable.ttf") format("truetype");
-  font-weight: 100 900;
+  font-family: "Satoshi";
+  src: url("/fonts/Satoshi-Light.woff") format("woff");
+  font-weight: 300;
   font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/Satoshi-LightItalic.woff") format("woff");
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/Satoshi-Regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/Satoshi-Italic.woff") format("woff");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/Satoshi-Medium.woff") format("woff");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/Satoshi-MediumItalic.woff") format("woff");
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/Satoshi-Bold.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/Satoshi-BoldItalic.woff") format("woff");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/Satoshi-Black.woff") format("woff");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/Satoshi-BlackItalic.woff") format("woff");
+  font-weight: 900;
+  font-style: italic;
   font-display: swap;
 }
 
@@ -42,10 +112,10 @@
   --header-height: 64px;
 
   /* Fonts */
-  --font-sans: "Cabinet Grotesk", system-ui, -apple-system, sans-serif;
-  --font-display: "Cabinet Grotesk", sans-serif;
-  --font-customFont: "Cabinet Grotesk", sans-serif;
-  --font-serif: "Cabinet Grotesk", sans-serif;
+  --font-sans: "Satoshi", system-ui, -apple-system, sans-serif;
+  --font-display: "Satoshi", sans-serif;
+  --font-customFont: "Satoshi", sans-serif;
+  --font-serif: "Satoshi", sans-serif;
   /* Faithful to original naming */
 
   /* Animations */
@@ -238,4 +308,46 @@ body {
   /* IE and Edge */
   scrollbar-width: none;
   /* Firefox */
+}
+
+/* ─── Invoice Print Styles ─── */
+.no-print {
+  /* Elements marked no-print are hidden during @media print */
+}
+
+.print-only {
+  display: none;
+}
+
+@media print {
+  /* Hide everything by default */
+  body > * {
+    display: none !important;
+  }
+
+  /* Show only the print-ready invoice */
+  body #invoice-full-print,
+  body .print-only {
+    display: block !important;
+  }
+
+  /* Reset body styles for clean white page */
+  body {
+    background: #fff !important;
+    color: #000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 12pt;
+  }
+
+  /* No page margins */
+  @page {
+    margin: 0;
+    size: A4 portrait;
+  }
+
+  /* Hide modal chrome and no-print elements */
+  .no-print {
+    display: none !important;
+  }
 }

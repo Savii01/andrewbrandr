@@ -22,6 +22,7 @@ export interface StageState {
     status: StageStatus;
     startedAt?: Timestamp | null;
     completedAt?: Timestamp | null;
+    documentation?: string;
 }
 
 // ─── Engagement Tiers (kept for pricing/commercial context) ───
@@ -60,6 +61,9 @@ export interface Engagement {
     // Commercial flags
     depositPaid: boolean;
     contractSigned: boolean;
+    paymentStructure?: "once" | "twice";
+    finalPaid?: boolean;
+    customPrice?: number;
 
     // Integrations
     driveFolderId?: string;
@@ -68,6 +72,25 @@ export interface Engagement {
     calendarEventIds: string[];
     feedbackFormId?: string;
     feedbackSheetId?: string;
+
+    // Discovery call scheduling
+    discoveryCall?: {
+        date: string; // YYYY-MM-DD
+        time: string; // HH:MM
+        meetLink: string;
+        eventLink?: string;
+        scheduledAt?: Timestamp;
+    };
+
+    // Client contact captured from the brief (brief.lead)
+    contact?: {
+        fullName?: string;
+        email?: string;
+        emailVerified?: boolean;
+        phone?: string;
+        source?: string;
+        [key: string]: any;
+    };
 
     // Notes & logs
     notes: string;
@@ -143,21 +166,48 @@ export interface Contract {
 
 // ─── Invoices ───
 
+export interface InvoiceLineItem {
+    description: string;
+    qty: number;
+    rate: number;
+}
+
 export interface Invoice {
     id: string;
-    engagementId: string;
+    invoiceNumber: string;
+    engagementId?: string;
     contractId?: string;
-    type: "deposit" | "milestone" | "final" | "retainer";
-    amount: number;
+
+    // Client info
+    clientName: string;
+    clientEmail: string;
+    clientAddress?: string;
+
+    // Line items & financials
+    lineItems: InvoiceLineItem[];
+    tax?: number;        // percentage, e.g. 7.5
+    discount?: number;   // flat amount deducted before tax
+
+    // Meta
+    type: "deposit" | "milestone" | "final" | "retainer" | "custom";
     currency: "ngn" | "usd";
     status: "draft" | "sent" | "paid" | "overdue" | "cancelled";
-    dueDate?: Timestamp | null;
+    issueDate: string;   // ISO date string e.g. "2025-07-02"
+    dueDate: string;     // ISO date string
+    notes?: string;
+
+    // Payment tracking
     paidAt?: Timestamp | null;
     paymentRef?: string;
-    description: string;
+
+    // Legacy compat
+    amount?: number;
+    description?: string;
+
     createdAt: Timestamp;
     updatedAt: Timestamp;
 }
+
 
 // ─── Retainers ───
 

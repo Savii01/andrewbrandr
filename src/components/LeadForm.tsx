@@ -1,6 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import { FiCheckCircle, FiMail } from "react-icons/fi";
+import { isValidEmail } from "@/lib/email-validation";
+import { sendEmailVerificationCode, checkEmailVerificationCode } from "@/lib/firebase/verifications";
 
 interface LeadFormProps {
     onUpdate: (data: any) => void;
@@ -10,13 +13,78 @@ interface LeadFormProps {
 
 const LeadForm: React.FC<LeadFormProps> = ({ onUpdate, data, errors }) => {
 
+    const [emailError, setEmailError] = useState("");
+    const [verifyStatus, setVerifyStatus] = useState<"idle" | "sending" | "sent" | "verifying" | "verified" | "failed">("idle");
+    const [codeInput, setCodeInput] = useState("");
+    const [verifyMessage, setVerifyMessage] = useState("");
+
+    const isSendingVerify = verifyStatus === "sending";
+    const isVerifying = verifyStatus === "verifying";
+    const isFailed = verifyStatus === "failed";
+    const isSent = verifyStatus === "sent";
+    const isVerifiedEmail = data.emailVerified === true || verifyStatus === "verified";
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
+        if (name === "email") {
+            if (value && !isValidEmail(value)) {
+                setEmailError("Please enter a valid email address.");
+            } else {
+                setEmailError("");
+            }
+            // Any change invalidates a previously verified address
+            setVerifyStatus("idle");
+            setCodeInput("");
+            setVerifyMessage("");
+            onUpdate({ ...data, [name]: value, emailVerified: false });
+            return;
+        }
         onUpdate({ ...data, [name]: value });
     };
 
     const setCurrency = (currency: "ngn" | "usd") => {
         onUpdate({ ...data, currency, whatsapp: "", telegram: "" });
+    };
+
+    const handleSendCode = async () => {
+        const email = (data.email || "").trim();
+        if (!isValidEmail(email)) {
+            setEmailError("Please enter a valid email address.");
+            return;
+        }
+        setEmailError("");
+        setVerifyStatus("sending");
+        setVerifyMessage("");
+        try {
+            await sendEmailVerificationCode(email, data.fullName);
+            setVerifyStatus("sent");
+            setVerifyMessage("A 6-digit code has been sent to your inbox.");
+        } catch (e) {
+            console.error("[Verify Email]", e);
+            setVerifyStatus("failed");
+            setVerifyMessage("Couldn't send the code. Please check the email and try again.");
+        }
+    };
+
+    const handleConfirmCode = async () => {
+        const email = (data.email || "").trim();
+        if (!/^\d{6}$/.test(codeInput.trim())) return;
+        setVerifyStatus("verifying");
+        try {
+            const ok = await checkEmailVerificationCode(email, codeInput.trim());
+            if (ok) {
+                onUpdate({ ...data, emailVerified: true });
+                setVerifyStatus("verified");
+                setVerifyMessage("");
+            } else {
+                setVerifyStatus("failed");
+                setVerifyMessage("That code didn't match. Check the email we sent and try again.");
+            }
+        } catch (e) {
+            console.error("[Verify Email]", e);
+            setVerifyStatus("failed");
+            setVerifyMessage("Verification failed. Please try again.");
+        }
     };
 
     const inputClasses = (field: string) => `w-full bg-white border rounded-xl px-4 py-3 text-black transition-all focus:ring-2 focus:ring-orange/20 outline-none text-base font-medium ${errors[field] ? "border-red-500" : "border-gray-200 focus:border-orange"
@@ -62,8 +130,66 @@ const LeadForm: React.FC<LeadFormProps> = ({ onUpdate, data, errors }) => {
                 </div>
                 <div>
                     <label className={labelClasses}>Email Address *</label>
-                    <input type="email" name="email" value={data.email || ""} onChange={handleChange} className={inputClasses("email")} placeholder="name@company.com" />
-                    {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+                    <input type="email" name="email" value={data.email || ""} onChange={handleChange} className={`${inputClasses("email")} ${emailError ? "border-red-500" : ""}`} placeholder="name@company.com" />
+                    {(emailError || errors.email) && <p className="text-red-500 text-xs mt-1">{emailError || errors.email}</p>}
+
+                    {/* Optional inline email verification */}
+                    {isVerifiedEmail ? (
+                        <p className="flex items-center gap-1.5 text-green-600 text-xs font-bold mt-2">
+                            <FiCheckCircle size={13} />
+                            Email verified
+                        </p>
+                    ) : isSent ? (
+                        <div className="mt-2 space-y-2">
+                            <p className="text-[11px] text-gray-400 font-medium">{verifyMessage}</p>
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    inputMode="numeric"
+                                    autoComplete="one-time-code"
+                                    maxLength={6}
+                                    value={codeInput}
+                                    onChange={(e) => setCodeInput(e.target.value.replace(/\D/g, ""))}
+                                    placeholder="6-digit code"
+                                    className="w-full max-w-[150px] bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-black font-bold text-center tracking-[0.35em] outline-none focus:border-orange focus:ring-2 focus:ring-orange/20"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleConfirmCode}
+                                    disabled={isVerifying || codeInput.trim().length !== 6}
+                                    className="px-4 py-2.5 bg-orange text-white text-xs font-black rounded-xl hover:bg-black transition-all disabled:opacity-50"
+                                >
+                                    {isVerifying ? "Checking..." : "Confirm"}
+                                </button>
+                            </div>
+                            {isFailed && (
+                                <p className="text-xs font-medium text-red-500">{verifyMessage}</p>
+                            )}
+                            <button
+                                type="button"
+                                onClick={handleSendCode}
+                                disabled={isSendingVerify}
+                                className="text-[11px] font-bold text-orange hover:underline disabled:opacity-40"
+                            >
+                                Resend code
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="mt-2">
+                            <button
+                                type="button"
+                                onClick={handleSendCode}
+                                disabled={isSendingVerify || !isValidEmail((data.email || "").trim())}
+                                className="inline-flex items-center gap-1.5 text-[11px] font-bold text-orange hover:underline disabled:opacity-40 disabled:cursor-not-allowed"
+                            >
+                                <FiMail size={11} />
+                                {isSendingVerify ? "Sending code..." : "Verify my email (optional)"}
+                            </button>
+                            {isFailed && (
+                                <p className="text-xs font-medium text-red-500 mt-1">{verifyMessage}</p>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
 

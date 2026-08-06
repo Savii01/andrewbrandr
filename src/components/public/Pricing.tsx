@@ -68,7 +68,7 @@ const stages = [
   }
 ];
 
-const Pricing = () => {
+const Pricing = ({ cmsData }: { cmsData?: any }) => {
   const [mounted, setMounted] = useState(false);
   const [isNigeria, setIsNigeria] = useState(false);
   const prevRef = useRef<HTMLButtonElement>(null);
@@ -95,6 +95,11 @@ const Pricing = () => {
     }
   }, [mounted]);
 
+  const activeHeading = cmsData?.heading || "Growth happens in phases.\nYour brand should reflect the one you're in.";
+  const activeInvestmentHeading = cmsData?.investmentHeading || "A strong brand is not an expense.";
+  const activeInvestmentText = cmsData?.investmentText || "It's the foundation your growth depends on.\nEach stage is designed around what your business actually needs.";
+  const activeTiers = cmsData?.tiers?.length > 0 ? cmsData.tiers : stages;
+
   return (
     <div id="stages" className="bg-[#FDF3E6] py-20 overflow-hidden">
       <div className="mx-4 flex flex-col justify-center items-center">
@@ -105,10 +110,8 @@ const Pricing = () => {
             <span className="bg-[#CC3300] text-white px-8 py-2.5 mb-5 rounded-full text-[14px] font-bold inline-block">
               Find your stage
             </span>
-            <h2 className="text-[#0F0000] text-[24px] sm:text-[28px] md:text-[30px] font-bold tracking-tight leading-[1.15]">
-              Growth happens in phases.
-              <br />
-              Your brand should reflect the one you&apos;re in.
+            <h2 className="text-[#0F0000] text-[24px] sm:text-[28px] md:text-[30px] font-bold tracking-tight leading-[1.15] whitespace-pre-line">
+              {activeHeading}
             </h2>
           </div>
 
@@ -174,8 +177,8 @@ const Pricing = () => {
               navigation={{ prevEl: prevRef.current, nextEl: nextRef.current }}
               className="w-full"
             >
-              {stages.map((item) => (
-                <SwiperSlide key={item.id} className="!h-auto">
+              {activeTiers.map((item: any, i: number) => (
+                <SwiperSlide key={item.id || i} className="!h-auto">
                   <div className="h-full border border-white/10 rounded-[2.2rem] p-6 sm:p-8 md:p-10 bg-[#fdf3e6] flex flex-col transition-all duration-300">
                     <div className="flex justify-between items-center mb-6">
                       <span className="text-[12px] font-bold uppercase bg-[#0f0000] text-[#fdf3e6] rounded-full py-1 px-4">
@@ -213,7 +216,7 @@ const Pricing = () => {
                     </div>
 
                     <Link 
-                      href={item.link}
+                      href={item.link || "#"}
                       className="inline-flex items-center justify-between w-full bg-[#0f0000] text-white px-8 py-4 rounded-full text-[15px] font-bold hover:bg-[#CC3300] transition-colors group"
                     >
                       {item.cta}
@@ -232,13 +235,12 @@ const Pricing = () => {
             The Investment
           </span>
           <h2 className="text-[#FDF3E6] text-[28px] md:text-[32px] font-extrabold tracking-tight mb-4 leading-tight">
-            A strong brand is not an expense.
+            {activeInvestmentHeading}
           </h2>
           
           <div className="space-y-4 text-[#FDF3E6]/90 text-[14px] md:text-[16px] max-w-[720px] leading-relaxed font-medium">
-            <p>
-              It&apos;s the foundation your growth depends on.
-              Each stage is designed around what your business actually needs.
+            <p className="whitespace-pre-line">
+              {activeInvestmentText}
             </p>
             
             <div className="flex flex-col sm:flex-row justify-start items-start  gap-4">

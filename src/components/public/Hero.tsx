@@ -7,9 +7,15 @@ import AvailabilityBadge from "./AvailabilityBadge";
 import Button from "./Button";
 import { MdArrowOutward } from "react-icons/md";
 
-export default function Hero() {
+export default function Hero({ cmsData }: { cmsData?: any }) {
+  const name = cmsData?.name || "Saviour-Andrew";
+  const role = cmsData?.role || "Brand Strategist & Designer";
+  const headline = cmsData?.headline || "Your brand is the first conversation \nyour business has with a stranger, and if it’s unclear, they move on.";
+  const description = cmsData?.description || "I build structured brand systems for businesses that need more than\ngood visuals. They need clarity, consistency, and a foundation that\ncan grow.\n\nStrategy. Identity. Web.";
+  const ctaText = cmsData?.ctaText || "Start the Process";
+  const ctaLink = cmsData?.ctaLink || "/work-with-me";
   return (
-    <section className="relative min-h-screen bg-[#0F0000] flex items-center justify-center px-4 py-24 md:pt-32 md:pb-8">
+    <section className="relative min-h-screen bg-[#FDF3E6] dark:bg-black flex items-center justify-center px-4 py-24 md:pt-32 md:pb-8">
       <div className="flex flex-col items-start text-left max-w-[720px] w-full gap-8">
 
         {/* ── Identity Row: Photo + Icon | Name + Role ── */}
@@ -27,49 +33,46 @@ export default function Hero() {
               />
             </div>
             {/* Brand Icon — overlapping the photo from the right */}
-            <div className="relative -ml-6 w-20 h-20 rounded-full border-2 border-orange overflow-hidden bg-[#0F0000] z-10 flex items-center justify-center">
+            <div className="relative -ml-6 w-20 h-20 rounded-full border-2 border-orange overflow-hidden bg-[#FDF3E6] dark:bg-black z-10 flex items-center justify-center">
               <Image
                 src="/brand_assets/icon_logo_BLACK.png"
                 alt="AndrewBrandr"
-                width={48}
-                height={48}
-                className="object-contain"
+                width={148}
+                height={148}
+                className="object-cover"
               />
             </div>
           </div>
 
           {/* Name + Role */}
           <div className="flex flex-col items-start gap-1">
-            <h2 className="text-[#FDF3E6] text-xl md:text-2xl font-bold leading-tight">
-              Andrew
+            <h2 className="text-[#0F0000] dark:text-white text-xl md:text-2xl font-bold leading-tight">
+              {name}
             </h2>
-            <p className="text-[#FDF3E6] text-base font-medium">
-              Brand Strategist & Designer
+            <p className="text-[#0F0000]/80 dark:text-gray-300 text-base font-medium">
+              {role}
             </p>
           </div>
         </div>
 
         {/* ── Headline ── */}
-        <h1 className="text-[#FDF3E6] text-[28px] sm:text-[36px] md:text-[36px] font-bold leading-[1.1] tracking-tight max-w-[620px]">
-          Your brand is the first conversation <br />your business has with a stranger, and if it’s unclear, they move on.
+        <h1 className="text-[#0F0000] dark:text-[#fdf3e6] text-[28px] sm:text-[36px] md:text-[36px] font-bold leading-[1.1] tracking-tight max-w-[620px] [#fdf3e6]space-pre-line">
+          {headline}
         </h1>
 
         {/* ── Supporting Paragraph ── */}
-        <p className="text-[#FDF3E6] text-[14px] sm:text-[16px] leading-relaxed max-w-[540px]">
-          I build structured brand systems for businesses that need more than
-          good visuals. They need clarity, consistency, and a foundation that
-          can grow.<br /><br />
-          Strategy. Identity. Web.
+        <p className="text-[#0F0000]/80 dark:text-gray-300 text-[14px] sm:text-[16px] leading-relaxed max-w-[540px] [#fdf3e6]space-pre-line">
+          {description}
         </p>
 
         {/* ── CTA Group ── */}
         <div className="flex flex-col sm:flex-row items-start gap-3 w-full sm:w-auto">
           <Button
-            href="/work-with-me"
-            label="Start the Process"
+            href={ctaLink}
+            label={ctaText}
             icon={MdArrowOutward}
             variant="secondary"
-            className="w-full sm:w-auto px-7 py-3 !bg-[#fdf3e6] !text-[#0F0000] !border-[#fdf3e6]/20 hover:!border-[#fdf3e6]/40 transition-colors !text-[14px] !rounded-full !font-bold hover:!bg-[#cc3300] hover:!text-white"
+            className="w-full sm:w-auto px-7 py-3 !bg-[#0F0000] dark:!bg-[#fdf3e6] !text-[#fdf3e6] dark:!text-[#0F0000] !border-transparent transition-colors !text-[14px] !rounded-full !font-bold hover:!bg-[#cc3300] dark:hover:!bg-[#cc3300] dark:hover:!text-[#fdf3e6]"
             fullWidth={false}
           />
           <AvailabilityBadge />

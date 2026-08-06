@@ -11,7 +11,7 @@ const navLinks = [
     { label: "Work", href: "/projects" },
     { label: "Process", href: "/#process" },
     { label: "Stages", href: "/#stages" },
-    { label: "About", href: "/about" },
+    { label: "About", href: "/#about" },
 ];
 
 const Navbar = () => {

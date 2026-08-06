@@ -29,29 +29,39 @@ export function useActiveEngagements() {
             setLoading(false);
             return;
         }
-        const q = query(
-            collection(db, "engagements"),
-            where("status", "==", "active"),
-            limit(50)
-        );
+        let active = true;
+        let unsubscribe: (() => void) | undefined;
 
-        const unsubscribe = onSnapshot(
-            q,
-            (snapshot) => {
-                const data = snapshot.docs.map((doc) => ({
-                    id: doc.id,
-                    ...doc.data(),
-                })) as Engagement[];
-                setEngagements(data);
-                setLoading(false);
-            },
-            (error) => {
-                console.error("Error fetching engagements:", error);
-                setLoading(false);
-            }
-        );
+        const timer = setTimeout(() => {
+            if (!active) return;
+            const q = query(
+                collection(db, "engagements"),
+                where("status", "==", "active"),
+                limit(50)
+            );
+
+            unsubscribe = onSnapshot(
+                q,
+                (snapshot) => {
+                    if (!active) return;
+                    const data = snapshot.docs.map((doc) => ({
+                        id: doc.id,
+                        ...doc.data(),
+                    })) as Engagement[];
+                    setEngagements(data);
+                    setLoading(false);
+                },
+                (error) => {
+                    if (!active) return;
+                    console.error("Error fetching engagements:", error);
+                    setLoading(false);
+                }
+            );
+        }, 0);
 
         return () => {
+            active = false;
+            clearTimeout(timer);
             if (unsubscribe) unsubscribe();
         };
     }, []);
@@ -70,27 +80,36 @@ export function useEngagement(id: string | null) {
             setLoading(false);
             return;
         }
+        let active = true;
+        let unsubscribe: (() => void) | undefined;
 
-        const unsubscribe = onSnapshot(
-            doc(db, "engagements", id),
-            (snapshot) => {
-                if (snapshot.exists()) {
-                    setEngagement({
-                        id: snapshot.id,
-                        ...snapshot.data(),
-                    } as Engagement);
-                } else {
-                    setEngagement(null);
+        const timer = setTimeout(() => {
+            if (!active) return;
+            unsubscribe = onSnapshot(
+                doc(db, "engagements", id),
+                (snapshot) => {
+                    if (!active) return;
+                    if (snapshot.exists()) {
+                        setEngagement({
+                            id: snapshot.id,
+                            ...snapshot.data(),
+                        } as Engagement);
+                    } else {
+                        setEngagement(null);
+                    }
+                    setLoading(false);
+                },
+                (error) => {
+                    if (!active) return;
+                    console.error("Error fetching engagement:", error);
+                    setLoading(false);
                 }
-                setLoading(false);
-            },
-            (error) => {
-                console.error("Error fetching engagement:", error);
-                setLoading(false);
-            }
-        );
+            );
+        }, 0);
 
         return () => {
+            active = false;
+            clearTimeout(timer);
             if (unsubscribe) unsubscribe();
         };
     }, [id]);
@@ -109,34 +128,43 @@ export function usePortalEngagement(token: string | null) {
             setLoading(false);
             return;
         }
+        let active = true;
+        let unsubscribe: (() => void) | undefined;
 
-        const q = query(
-            collection(db, "engagements"),
-            where("portalToken", "==", token),
-            limit(1)
-        );
+        const timer = setTimeout(() => {
+            if (!active) return;
+            const q = query(
+                collection(db, "engagements"),
+                where("portalToken", "==", token),
+                limit(1)
+            );
 
-        const unsubscribe = onSnapshot(
-            q,
-            (snapshot) => {
-                if (!snapshot.empty) {
-                    const doc = snapshot.docs[0];
-                    setEngagement({
-                        id: doc.id,
-                        ...doc.data(),
-                    } as Engagement);
-                } else {
-                    setEngagement(null);
+            unsubscribe = onSnapshot(
+                q,
+                (snapshot) => {
+                    if (!active) return;
+                    if (!snapshot.empty) {
+                        const doc = snapshot.docs[0];
+                        setEngagement({
+                            id: doc.id,
+                            ...doc.data(),
+                        } as Engagement);
+                    } else {
+                        setEngagement(null);
+                    }
+                    setLoading(false);
+                },
+                (error) => {
+                    if (!active) return;
+                    console.error("Error fetching portal engagement:", error);
+                    setLoading(false);
                 }
-                setLoading(false);
-            },
-            (error) => {
-                console.error("Error fetching portal engagement:", error);
-                setLoading(false);
-            }
-        );
+            );
+        }, 0);
 
         return () => {
+            active = false;
+            clearTimeout(timer);
             if (unsubscribe) unsubscribe();
         };
     }, [token]);
@@ -162,24 +190,34 @@ export function useStudioStats() {
             setLoading(false);
             return;
         }
-        const unsubscribe = onSnapshot(
-            collection(db, "metadata"),
-            (snapshot) => {
-                const statsDoc = snapshot.docs.find(
-                    (doc) => doc.id === "studio_stats"
-                );
-                if (statsDoc) {
-                    setStats(statsDoc.data() as StudioStats);
+        let active = true;
+        let unsubscribe: (() => void) | undefined;
+
+        const timer = setTimeout(() => {
+            if (!active) return;
+            unsubscribe = onSnapshot(
+                collection(db, "metadata"),
+                (snapshot) => {
+                    if (!active) return;
+                    const statsDoc = snapshot.docs.find(
+                        (doc) => doc.id === "studio_stats"
+                    );
+                    if (statsDoc) {
+                        setStats(statsDoc.data() as StudioStats);
+                    }
+                    setLoading(false);
+                },
+                (error) => {
+                    if (!active) return;
+                    console.error("Error fetching studio stats:", error);
+                    setLoading(false);
                 }
-                setLoading(false);
-            },
-            (error) => {
-                console.error("Error fetching studio stats:", error);
-                setLoading(false);
-            }
-        );
+            );
+        }, 0);
 
         return () => {
+            active = false;
+            clearTimeout(timer);
             if (unsubscribe) unsubscribe();
         };
     }, []);
@@ -198,35 +236,152 @@ export function usePendingBriefs() {
             setLoading(false);
             return;
         }
-        const q = query(
-            collection(db, "briefs"),
-            where("status", "==", "pending"),
-            limit(20)
-        );
+        let active = true;
+        let unsubscribe: (() => void) | undefined;
 
-        const unsubscribe = onSnapshot(
-            q,
-            (snapshot) => {
-                const data = snapshot.docs.map((doc) => ({
-                    id: doc.id,
-                    ...doc.data(),
-                    createdAt: doc.data().createdAt?.toDate() || new Date(),
-                }));
-                setBriefs(data);
-                setLoading(false);
-            },
-            (error) => {
-                console.error("Error fetching briefs:", error);
-                setLoading(false);
-            }
-        );
+        const timer = setTimeout(() => {
+            if (!active) return;
+            const q = query(
+                collection(db, "briefs"),
+                where("status", "==", "pending"),
+                limit(20)
+            );
+
+            unsubscribe = onSnapshot(
+                q,
+                (snapshot) => {
+                    if (!active) return;
+                    const data = snapshot.docs.map((doc) => ({
+                        id: doc.id,
+                        ...doc.data(),
+                        createdAt: doc.data().createdAt?.toDate() || new Date(),
+                    }));
+                    setBriefs(data);
+                    setLoading(false);
+                },
+                (error) => {
+                    if (!active) return;
+                    console.error("Error fetching briefs:", error);
+                    setLoading(false);
+                }
+            );
+        }, 0);
 
         return () => {
+            active = false;
+            clearTimeout(timer);
             if (unsubscribe) unsubscribe();
         };
     }, []);
 
     return { briefs, loading };
+}
+
+// ─── In-System Notifications (pending briefs + pending bookings) ───
+
+export interface SystemNotification {
+    id: string;
+    type: "brief" | "booking";
+    title: string;
+    subtitle: string;
+    date: Date;
+    href: string;
+}
+
+export function useNotifications() {
+    const [notifications, setNotifications] = useState<SystemNotification[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if (!db) {
+            setLoading(false);
+            return;
+        }
+        let active = true;
+        const unsubs: (() => void)[] = [];
+
+        const timer = setTimeout(() => {
+            const briefsQ = query(
+                collection(db, "briefs"),
+                where("status", "==", "pending"),
+                limit(10)
+            );
+            const bookingsQ = query(
+                collection(db, "bookings"),
+                where("status", "==", "pending"),
+                limit(10)
+            );
+
+            const briefUnsub = onSnapshot(
+                briefsQ,
+                (snapshot) => {
+                    if (!active) return;
+                    const briefNotifs: SystemNotification[] = snapshot.docs.map((doc) => {
+                        const data = doc.data();
+                        return {
+                            id: `brief-${doc.id}`,
+                            type: "brief",
+                            title: data.brief?.businessName || "New brief received",
+                            subtitle: `New ${data.plan || "branding"} project brief from ${data.lead?.fullName || "a new client"}`,
+                            date: data.createdAt?.toDate() || new Date(),
+                            href: "/dashboard/briefs",
+                        };
+                    });
+                    setNotifications((prev) => mergeNotifications(briefNotifs, prev.filter((n) => n.type !== "brief")));
+                    setLoading(false);
+                },
+                (error) => {
+                    if (!active) return;
+                    console.error("Error fetching notification briefs:", error);
+                    setLoading(false);
+                }
+            );
+
+            const bookingUnsub = onSnapshot(
+                bookingsQ,
+                (snapshot) => {
+                    if (!active) return;
+                    const bookingNotifs: SystemNotification[] = snapshot.docs.map((doc) => {
+                        const data = doc.data();
+                        return {
+                            id: `booking-${doc.id}`,
+                            type: "booking",
+                            title: data.name || "New booking",
+                            subtitle: `Discovery call requested${data.date ? ` on ${data.date}` : ""} at ${data.time || ""}`,
+                            date: data.createdAt?.toDate() || new Date(),
+                            href: "/dashboard/bookings",
+                        };
+                    });
+                    setNotifications((prev) => mergeNotifications(prev.filter((n) => n.type !== "booking"), bookingNotifs));
+                    setLoading(false);
+                },
+                (error) => {
+                    if (!active) return;
+                    console.error("Error fetching notification bookings:", error);
+                    setLoading(false);
+                }
+            );
+
+            unsubs.push(briefUnsub, bookingUnsub);
+        }, 0);
+
+        return () => {
+            active = false;
+            clearTimeout(timer);
+            unsubs.forEach((unsub) => unsub());
+        };
+    }, []);
+
+    return { notifications, unreadCount: notifications.length, loading };
+}
+
+function mergeNotifications(
+    list: SystemNotification[],
+    rest: SystemNotification[]
+): SystemNotification[] {
+    return [...list, ...rest]
+        .sort((a, b) => b.date.getTime() - a.date.getTime())
+        .slice(0, 12);
 }
 
 // ─── Engagement Proposals ───
@@ -240,29 +395,38 @@ export function useEngagementProposals(engagementId: string | null) {
             setLoading(false);
             return;
         }
+        let active = true;
+        let unsubscribe: (() => void) | undefined;
 
-        const q = query(
-            collection(db, "proposals"),
-            where("engagementId", "==", engagementId)
-        );
+        const timer = setTimeout(() => {
+            if (!active) return;
+            const q = query(
+                collection(db, "proposals"),
+                where("engagementId", "==", engagementId)
+            );
 
-        const unsubscribe = onSnapshot(
-            q,
-            (snapshot) => {
-                const data = snapshot.docs.map((d) => ({
-                    id: d.id,
-                    ...d.data(),
-                })) as Proposal[];
-                setProposals(data);
-                setLoading(false);
-            },
-            (error) => {
-                console.error("Error fetching proposals:", error);
-                setLoading(false);
-            }
-        );
+            unsubscribe = onSnapshot(
+                q,
+                (snapshot) => {
+                    if (!active) return;
+                    const data = snapshot.docs.map((d) => ({
+                        id: d.id,
+                        ...d.data(),
+                    })) as Proposal[];
+                    setProposals(data);
+                    setLoading(false);
+                },
+                (error) => {
+                    if (!active) return;
+                    console.error("Error fetching proposals:", error);
+                    setLoading(false);
+                }
+            );
+        }, 0);
 
         return () => {
+            active = false;
+            clearTimeout(timer);
             if (unsubscribe) unsubscribe();
         };
     }, [engagementId]);
@@ -281,29 +445,38 @@ export function useEngagementInvoices(engagementId: string | null) {
             setLoading(false);
             return;
         }
+        let active = true;
+        let unsubscribe: (() => void) | undefined;
 
-        const q = query(
-            collection(db, "invoices"),
-            where("engagementId", "==", engagementId)
-        );
+        const timer = setTimeout(() => {
+            if (!active) return;
+            const q = query(
+                collection(db, "invoices"),
+                where("engagementId", "==", engagementId)
+            );
 
-        const unsubscribe = onSnapshot(
-            q,
-            (snapshot) => {
-                const data = snapshot.docs.map((d) => ({
-                    id: d.id,
-                    ...d.data(),
-                })) as Invoice[];
-                setInvoices(data);
-                setLoading(false);
-            },
-            (error) => {
-                console.error("Error fetching invoices:", error);
-                setLoading(false);
-            }
-        );
+            unsubscribe = onSnapshot(
+                q,
+                (snapshot) => {
+                    if (!active) return;
+                    const data = snapshot.docs.map((d) => ({
+                        id: d.id,
+                        ...d.data(),
+                    })) as Invoice[];
+                    setInvoices(data);
+                    setLoading(false);
+                },
+                (error) => {
+                    if (!active) return;
+                    console.error("Error fetching invoices:", error);
+                    setLoading(false);
+                }
+            );
+        }, 0);
 
         return () => {
+            active = false;
+            clearTimeout(timer);
             if (unsubscribe) unsubscribe();
         };
     }, [engagementId]);
@@ -318,6 +491,7 @@ export function useEngagementInvoices(engagementId: string | null) {
  * Used on Kanban cards and overview.
  */
 export function getMacroProgress(engagement: Engagement): number {
+    if (!engagement.stages) return 0;
     const stages = Object.values(engagement.stages);
     const completed = stages.filter((s) => s.status === "completed").length;
     return Math.round((completed / stages.length) * 100);
@@ -345,6 +519,7 @@ export function getMicroProgress(
  * Count of active stages (for badges, etc.).
  */
 export function getActiveStageCount(engagement: Engagement): number {
+    if (!engagement.stages) return 0;
     return Object.values(engagement.stages).filter(
         (s) => s.status === "active"
     ).length;

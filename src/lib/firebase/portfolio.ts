@@ -11,15 +11,51 @@ import {
     deleteDoc
 } from "firebase/firestore";
 import { Project } from "@/lib/types/portfolio";
+import { projects as staticProjects } from "@/data/projects";
 
 const COLLECTION_NAME = "portfolio";
 
 /**
- * Get all projects ordered by the 'order' field
+ * Get all projects ordered by the 'order' field.
+ * Auto-seeds the database with static projects if the collection is empty.
  */
 export async function getProjects(includePrivate = false) {
     const q = query(collection(db, COLLECTION_NAME), orderBy("order", "asc"));
-    const querySnapshot = await getDocs(q);
+    let querySnapshot = await getDocs(q);
+    
+    // Auto-seed if collection is empty
+    if (querySnapshot.empty) {
+        console.log("Portfolio collection empty — seeding with static projects...");
+        for (const p of staticProjects) {
+            await addDoc(collection(db, COLLECTION_NAME), {
+                slug: p.slug,
+                name: p.name,
+                client: p.client,
+                industry: p.industry || "",
+                year: p.year,
+                stage: p.stage,
+                coverImage: p.coverImage,
+                services: p.services,
+                context: p.context,
+                problem: p.problem,
+                strategy: p.strategy,
+                strategyImages: p.strategyImages || [],
+                creativeDirection: p.creativeDirection,
+                creativeDirectionImages: p.creativeDirectionImages || [],
+                identitySystem: p.identitySystem,
+                identitySystemImages: p.identitySystemImages || [],
+                outcome: p.outcome,
+                website: p.website || "",
+                behance: p.behance || "",
+                testimonial: p.testimonial || null,
+                isPublic: true,
+                order: p.id,
+                createdAt: serverTimestamp()
+            });
+        }
+        // Refetch after seeding
+        querySnapshot = await getDocs(q);
+    }
     
     const projects = querySnapshot.docs.map(doc => ({
         id: doc.id,
