@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    // firebase-admin is CommonJS — tell Next.js not to bundle it server-side
+    serverExternalPackages: ['firebase-admin'],
     images: {
         remotePatterns: [
             {

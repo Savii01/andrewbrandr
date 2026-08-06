@@ -11,6 +11,7 @@ import {
     User,
     onAuthStateChanged,
     signInWithEmailAndPassword,
+    signInWithCustomToken,
     createUserWithEmailAndPassword,
     signOut as firebaseSignOut,
     GoogleAuthProvider,
@@ -59,7 +60,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, []);
 
     const signIn = async (email: string, password: string) => {
-        // 1. Try Admin Bypass first via API
+        // Step 1: Verify admin credentials against .env via the API
+        let customToken: string | null = null;
         try {
             const res = await fetch('/api/admin-auth', {
                 method: 'POST',
@@ -68,82 +70,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             });
 
             if (res.ok) {
-                // Admin credentials confirmed — authenticate with Firebase Auth
-                // so Firestore gets a real authenticated session
-                try {
-                    await signInWithEmailAndPassword(auth, email, password);
-                } catch (firebaseError: any) {
-                    console.error("Firebase Auth sign in failed for admin:", firebaseError);
-
-                    if (firebaseError?.code === 'auth/network-request-failed') {
-                        throw new Error(
-                            "Network connection error: Firebase servers are unreachable. " +
-                            "If you are in a restricted network or your ISP blocks Firestore/Firebase, " +
-                            "please connect to a VPN or switch internet connections to access the workspace."
-                        );
-                    }
-
-                    // If user doesn't exist in Firebase Auth yet, try to create them
-                    if (
-                        firebaseError?.code === 'auth/user-not-found' ||
-                        firebaseError?.code === 'auth/invalid-credential'
-                    ) {
-                        try {
-                            await createUserWithEmailAndPassword(auth, email, password);
-                        } catch (createError: any) {
-                            console.error("Firebase Auth create user failed for admin:", createError);
-                            
-                            if (createError?.code === 'auth/email-already-in-use') {
-                                throw new Error(
-                                    "Firebase Authentication Mismatch: The email is already registered in Firebase, " +
-                                    "but the password does not match the ADMIN_PASSWORD in your .env.local. " +
-                                    "Please reset/change the password for " + email + " in your Firebase Console to " +
-                                    "match the one in your .env.local (currently 'Savii123'), or update ADMIN_PASSWORD " +
-                                    "in your .env.local to match your Firebase user password and restart the dev server."
-                                );
-                            }
-                            
-                            if (createError?.code === 'auth/network-request-failed') {
-                                throw new Error(
-                                    "Network connection error: Firebase servers are unreachable. " +
-                                    "Please connect to a VPN or switch internet connections to access the workspace."
-                                );
-                            }
-
-                            throw new Error(`Firebase Auth User Creation Failed: ${createError?.message || createError}`);
-                        }
-                    } else {
-                        throw new Error(`Firebase Auth Sign In Failed: ${firebaseError?.message || firebaseError}`);
-                    }
-                }
-                return;
-            } else {
-                const errData = await res.json().catch(() => ({}));
-                throw new Error(errData.message || "Invalid credentials. Please verify your admin access.");
+                const data = await res.json();
+                customToken = data.customToken ?? null;
+            } else if (res.status === 401) {
+                throw new Error("Invalid credentials. Please verify your admin access.");
             }
+            // If the API call itself fails (network, 500), fall through to standard Firebase login
         } catch (e: any) {
-            // If the error was thrown by our inner blocks, propagate it
-            if (e instanceof Error && (
-                e.message.includes("Firebase") || 
-                e.message.includes("Network connection error") || 
-                e.message.includes("Invalid credentials")
-            )) {
-                throw e;
-            }
-            console.error("Admin check failed, falling back to standard Firebase login:", e);
+            if (e.message === "Invalid credentials. Please verify your admin access.") throw e;
+            console.warn("Admin auth API unreachable, falling back to Firebase login:", e);
         }
 
-        // 2. Fallback to standard Firebase login
+        // Step 2a: If we got a custom token, sign in with it — password mismatch is impossible
+        if (customToken) {
+            try {
+                await signInWithCustomToken(auth, customToken);
+                return;
+            } catch (err: any) {
+                if (err?.code === 'auth/network-request-failed') {
+                    throw new Error(
+                        "Network error: Firebase servers are unreachable. " +
+                        "Please check your internet connection or try a VPN."
+                    );
+                }
+                throw new Error("Authentication failed. Please try again.");
+            }
+        }
+
+        // Step 2b: Fallback — standard Firebase email/password login (non-admin users)
         try {
             await signInWithEmailAndPassword(auth, email, password);
         } catch (firebaseError: any) {
             if (firebaseError?.code === 'auth/network-request-failed') {
                 throw new Error(
-                    "Network connection error: Firebase servers are unreachable. " +
-                    "Please connect to a VPN or switch internet connections to access the workspace."
+                    "Network error: Firebase servers are unreachable. " +
+                    "Please check your internet connection or try a VPN."
                 );
             }
-            throw firebaseError;
+            throw new Error("Invalid credentials. Please check your email and password.");
         }
     };
 
