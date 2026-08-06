@@ -72,13 +72,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (res.ok) {
                 const data = await res.json();
                 customToken = data.customToken ?? null;
-            } else if (res.status === 401) {
-                throw new Error("Invalid credentials. Please verify your admin access.");
+            } else {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.message || "Invalid credentials. Please verify your admin access.");
             }
-            // If the API call itself fails (network, 500), fall through to standard Firebase login
         } catch (e: any) {
-            if (e.message === "Invalid credentials. Please verify your admin access.") throw e;
-            console.warn("Admin auth API unreachable, falling back to Firebase login:", e);
+            // Propagate explicit auth errors to the UI
+            throw e;
         }
 
         // Step 2a: If we got a custom token, sign in with it — password mismatch is impossible

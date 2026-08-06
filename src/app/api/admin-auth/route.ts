@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     } catch (error: any) {
         console.error('Admin auth error:', error);
         return NextResponse.json(
-            { success: false, message: 'Authentication service error. Please try again.' },
+            { success: false, message: error?.message || 'Authentication service error. Please try again.' },
             { status: 500 }
         );
     }
